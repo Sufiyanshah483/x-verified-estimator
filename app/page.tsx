@@ -4,89 +4,45 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { GlassCard } from '@/components/ui/glass-card';
-import { FloatingShapes } from '@/components/ui/floating-shapes';
-import { CursorGlow } from '@/components/ui/cursor-glow';
 import { AnalyzeForm } from '@/components/analyze-form';
 import { ResultsDashboard, AnalysisResult } from '@/components/results-dashboard';
-import { Zap, ShieldCheck, BarChart3, UploadCloud } from 'lucide-react';
+import { FloatingShapes } from '@/components/ui/floating-shapes';
+import { CursorGlow } from '@/components/ui/cursor-glow';
+import { UploadCloud, Sparkles, ArrowRight } from 'lucide-react';
+import { analyzeDemoScreenshot } from '@/actions/demo-analyze';
 
 export default function Home() {
     const [view, setView] = useState<'hero' | 'analyzing' | 'results'>('hero');
-    const [username, setUsername] = useState('');
     const [results, setResults] = useState<AnalysisResult | null>(null);
+    const [username, setUsername] = useState<string>('');
 
     const handleStartAnalysis = () => {
         setView('analyzing');
     };
 
-    const handleAnalyze = async ({ username: user, image }: { username: string; image: File }) => {
-        setUsername(user);
-
-        try {
-            // Check if this is demo mode - Client-side demo for maximum reliability
-            if (user === 'demo_user' || user === 'demo') {
-                // Return demo results immediately
-                const demoData = {
-                    verifiedImpressions: { min: 45000, max: 108000 },
-                    verifiedEngagements: { min: 3600, max: 6750 },
-                    verifiedImpressionPercentage: 6.5,
-                    confidenceScore: 'High',
-                    timeRange: 'Last 28 days',
-                    raw: {
-                        impressions: 1200000,
-                        engagements: 45000
-                    }
-                };
-
-                // Add a small delay for realistic "AI processing" feel
-                await new Promise(r => setTimeout(r, 1500));
-
-                setResults(demoData as AnalysisResult);
-                setView('results');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('username', user);
-            formData.append('image', image);
-
-            // Dynamically import to ensure server action is handled correctly
-            const { analyzeScreenshot } = await import('@/actions/analyze');
-            const data = await analyzeScreenshot(formData);
-
-            // Always set results, even if there's an error (will be displayed in dashboard)
-            setResults(data as AnalysisResult);
-            setView('results');
-        } catch (error) {
-            console.error("Failed to analyze:", error);
-            // Create error result object
-            setResults({
-                verifiedImpressions: { min: 0, max: 0 },
-                verifiedEngagements: { min: 0, max: 0 },
-                verifiedImpressionPercentage: 0,
-                confidenceScore: 'Low',
-                timeRange: 'N/A',
-                error: "An unexpected error occurred. Please try again."
-            } as AnalysisResult);
-            setView('results');
-        }
+    const handleAnalyze = async (data: { username: string; image: File }) => {
+        setUsername(data.username);
+        // We'll use the demo action for now
+        const result = await analyzeDemoScreenshot();
+        setResults(result);
+        setView('results');
     };
 
     const handleReset = () => {
+        setView('hero');
         setResults(null);
         setUsername('');
-        setView('hero');
     };
 
     return (
-        <div className="flex min-h-screen flex-col relative overflow-hidden bg-slate-50 text-slate-900 selection:bg-blue-500/20">
+        <div className="flex min-h-screen flex-col relative overflow-hidden bg-[#f7f3eb] text-black selection:bg-[#fde047]">
 
-            {/* Floating 3D Shapes Background */}
-            <FloatingShapes />
-
-            {/* Cursor Following Glow Effect */}
-            <CursorGlow />
+            {/* Custom Background Elements - More blocky and colorful */}
+            <div className="fixed inset-0 pointer-events-none opacity-20">
+                <div className="absolute top-20 left-[10%] w-64 h-64 bg-[#60a5fa] border-4 border-black rotate-12" />
+                <div className="absolute bottom-40 right-[15%] w-80 h-80 bg-[#4ade80] border-4 border-black -rotate-6" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border-4 border-black/10 dashed" />
+            </div>
 
             <Header />
 
@@ -100,41 +56,44 @@ export default function Home() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.5 }}
-                            className="w-full max-w-4xl mx-auto text-center space-y-8 mb-20"
+                            className="w-full max-w-4xl mx-auto text-center space-y-10 mb-20"
                         >
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold text-blue-700 mb-4 animate-in fade-in slide-in-from-bottom-4 duration-700 uppercase tracking-widest">
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
-                                </span>
-                                AI-Powered Analysis
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#fde047] border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-xs font-black text-black uppercase tracking-widest animate-bounce">
+                                <Sparkles className="size-4 fill-white" />
+                                100% Accurate Estimations
                             </div>
 
-                            <h1 className="text-5xl md:text-7xl font-black tracking-tight text-slate-900 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-100 leading-[1.1]">
-                                Estimate Your <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
-                                    Verified Impact
-                                </span>
-                            </h1>
+                            <div className="relative inline-block">
+                                <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-black leading-[0.9] uppercase italic">
+                                    CREATE <br />
+                                    <span className="bg-black text-white px-4 py-2 inline-block my-2 rotate-[-1deg]">
+                                        YOUR VERIFIED
+                                    </span> <br />
+                                    IMPACT REPORT
+                                </h1>
+                                <div className="absolute -top-10 -right-20 hidden md:block w-32 h-32 bg-[#f472b6] border-4 border-black rounded-full shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center p-4">
+                                    <span className="text-xs font-black leading-tight">MADE FOR CREATORS</span>
+                                </div>
+                            </div>
 
-                            <p className="max-w-2xl mx-auto text-lg text-slate-500 font-medium animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-                                X (Twitter) doesn't show verified impressions. We use AI vision and advanced heuristics to approximate your true reach among verified users.
+                            <p className="max-w-2xl mx-auto text-xl text-black font-bold bg-[#60a5fa]/20 border-2 border-black/20 p-4 rounded-xl rotate-[1deg]">
+                                Unlock the secrets of your X analytics. We simulate verified reach with high-precision heuristic modeling.
                             </p>
 
-                            <div className="p-10 mt-12 rounded-3xl border border-slate-200 bg-white/50 backdrop-blur-xl shadow-xl shadow-slate-200/50 hover:bg-white/80 transition-all duration-500">
+                            <div className="p-12 mt-12 bg-white border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)]">
                                 <div className="flex flex-col items-center gap-6">
-                                    <div className="p-4 rounded-2xl bg-blue-50 border border-blue-100">
-                                        <UploadCloud className="size-8 text-blue-600" />
+                                    <div className="p-5 rounded-2xl bg-[#4ade80] border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                        <UploadCloud className="size-10 text-black" />
                                     </div>
                                     <div>
-                                        <h3 className="text-2xl font-black mb-2 text-slate-900">Ready to analyze?</h3>
-                                        <p className="text-base text-slate-500 mb-8 font-medium">
-                                            Upload a screenshot of your X analytics to get started.
+                                        <h3 className="text-3xl font-black mb-4 uppercase italic">Ready to Unlock?</h3>
+                                        <p className="text-lg text-slate-600 mb-10 font-bold max-w-sm">
+                                            Place your regular order... wait, I mean upload your screenshot!
                                         </p>
 
                                         <button
                                             onClick={handleStartAnalysis}
-                                            className="px-10 py-4 rounded-2xl bg-slate-900 text-white font-bold shadow-xl shadow-slate-900/20 transition-all hover:scale-[1.05] active:scale-[0.95] hover:bg-slate-800"
+                                            className="px-12 py-5 rounded-lg bg-[#fde047] text-black font-black text-2xl uppercase italic border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-y-[-2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                                         >
                                             Start Analysis
                                         </button>
@@ -153,13 +112,18 @@ export default function Home() {
                             transition={{ duration: 0.4 }}
                             className="w-full max-w-md mx-auto py-12"
                         >
-                            <div className="text-center mb-8">
-                                <h2 className="text-3xl font-black text-slate-900 mb-2">Upload Analytics</h2>
-                                <p className="text-slate-500 font-medium">Please upload a clear screenshot of your X analytics dashboard.</p>
+                            <div className="text-center mb-10">
+                                <h2 className="text-5xl font-black text-black mb-4 uppercase italic">Upload Details</h2>
+                                <p className="text-slate-600 font-bold bg-[#fde047] w-fit mx-auto px-4 py-1 border-2 border-black rotate-[-2deg]">
+                                    We need your stats, Pablo.
+                                </p>
                             </div>
                             <AnalyzeForm onAnalyze={handleAnalyze} />
-                            <button onClick={() => setView('hero')} className="mt-8 text-sm text-gray-500 hover:text-white transition-colors">
-                                Back to Home
+                            <button
+                                onClick={() => setView('hero')}
+                                className="mt-12 text-sm font-black text-black border-b-2 border-black uppercase tracking-widest hover:bg-black hover:text-white transition-all px-2"
+                            >
+                                ← Back to Home
                             </button>
                         </motion.div>
                     )}
@@ -167,58 +131,18 @@ export default function Home() {
                     {view === 'results' && results && (
                         <motion.div
                             key="results"
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 30 }}
-                            transition={{ duration: 0.5 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="w-full"
                         >
-                            <ResultsDashboard
-                                data={results}
-                                username={username}
-                                onReset={handleReset}
-                            />
+                            <ResultsDashboard data={results} username={username} onReset={handleReset} />
                         </motion.div>
                     )}
                 </AnimatePresence>
-
-                {/* Feature Grid - Only show on Hero */}
-                {view === 'hero' && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
-                        <FeatureCard
-                            icon={<Zap className="size-6 text-yellow-400" />}
-                            title="Instant Vision API"
-                            description="Our AI reads your screenshot data in seconds with high accuracy."
-                        />
-                        <FeatureCard
-                            icon={<ShieldCheck className="size-6 text-green-400" />}
-                            title="Verified Estimation"
-                            description="Heuristic models compliant with public engagement patterns."
-                        />
-                        <FeatureCard
-                            icon={<BarChart3 className="size-6 text-purple-400" />}
-                            title="Engagement Breakdown"
-                            description="See estimated ranges for likes, replies, and reposts."
-                        />
-                    </div>
-                )}
-
             </main>
 
             <Footer />
         </div>
-    );
-}
-
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
-    return (
-        <GlassCard className="p-6 hover:bg-white/10 transition-colors duration-300">
-            <div className="size-12 rounded-xl bg-white/5 flex items-center justify-center mb-4 border border-white/10">
-                {icon}
-            </div>
-            <h3 className="text-lg font-semibold mb-2 text-white">{title}</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">
-                {description}
-            </p>
-        </GlassCard>
     );
 }

@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { UploadCloud, X, Loader2, ArrowRight } from 'lucide-react';
-import { GlassCard } from '@/components/ui/glass-card';
+import { UploadCloud, X, Loader2, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
@@ -46,28 +45,26 @@ export function AnalyzeForm({ onAnalyze }: AnalyzeFormProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Since we are only using the Analysis button for now
-        // This is kept for safety
     };
 
     return (
-        <div className="w-full max-w-md mx-auto p-8 rounded-3xl bg-white border border-slate-200 shadow-xl shadow-slate-200/50 transition-all duration-300">
-            <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="w-full max-w-md mx-auto p-8 bg-white border-4 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all">
+            <form onSubmit={handleSubmit} className="space-y-8">
 
                 {/* Username Input */}
                 <div className="space-y-2 text-left">
-                    <label htmlFor="username" className="text-sm font-bold text-slate-500 ml-1 uppercase tracking-widest">
-                        X Username
+                    <label htmlFor="username" className="text-sm font-black text-black uppercase tracking-widest pl-1">
+                        Creator Handle
                     </label>
                     <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">@</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-black font-black text-xl">@</span>
                         <input
                             id="username"
                             type="text"
-                            placeholder="elonmusk"
+                            placeholder="username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-10 pr-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all font-medium"
+                            className="w-full bg-[#f7f3eb] border-4 border-black rounded-lg py-4 pl-12 pr-4 text-black placeholder:text-slate-400 focus:outline-none focus:bg-[#fde047] transition-all font-bold text-lg"
                             required
                         />
                     </div>
@@ -75,8 +72,8 @@ export function AnalyzeForm({ onAnalyze }: AnalyzeFormProps) {
 
                 {/* Image Upload Area */}
                 <div className="space-y-2 text-left">
-                    <label className="text-sm font-bold text-slate-500 ml-1 uppercase tracking-widest">
-                        Analytics Screenshot
+                    <label className="text-sm font-black text-black uppercase tracking-widest pl-1">
+                        Analytics Visual
                     </label>
                     <div
                         onClick={() => fileInputRef.current?.click()}
@@ -84,9 +81,9 @@ export function AnalyzeForm({ onAnalyze }: AnalyzeFormProps) {
                         onDragLeave={() => setIsDragOver(false)}
                         onDrop={handleDrop}
                         className={cn(
-                            "relative group border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 overflow-hidden",
-                            isDragOver ? "border-blue-500 bg-blue-50" : "border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-slate-100/50",
-                            preview ? "p-0 border-none h-64" : ""
+                            "relative group border-4 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300 overflow-hidden",
+                            isDragOver ? "border-black bg-[#60a5fa]/20" : "border-black bg-[#f7f3eb] hover:bg-[#60a5fa]/10",
+                            preview ? "p-0 border-solid h-64" : ""
                         )}
                     >
                         <input
@@ -103,10 +100,10 @@ export function AnalyzeForm({ onAnalyze }: AnalyzeFormProps) {
                                     src={preview}
                                     alt="Preview"
                                     fill
-                                    className="object-contain bg-slate-100 rounded-2xl"
+                                    className="object-contain bg-white rounded-lg p-2"
                                 />
-                                <div className="absolute inset-0 bg-white/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                                    <p className="text-slate-900 font-bold">Change Image</p>
+                                <div className="absolute inset-0 bg-white/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <p className="text-black font-black uppercase text-xl bg-[#fde047] px-4 py-2 border-2 border-black">Change</p>
                                 </div>
                                 <button
                                     type="button"
@@ -116,22 +113,22 @@ export function AnalyzeForm({ onAnalyze }: AnalyzeFormProps) {
                                         setPreview(null);
                                         if (fileInputRef.current) fileInputRef.current.value = '';
                                     }}
-                                    className="absolute top-3 right-3 p-2 rounded-full bg-slate-900/10 text-slate-900 hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                                    className="absolute top-2 right-2 p-2 rounded-lg bg-black text-white hover:bg-red-500 transition-all border-2 border-black"
                                 >
                                     <X className="size-4" />
                                 </button>
                             </div>
                         ) : (
                             <div className="flex flex-col items-center gap-4 py-6">
-                                <div className="p-4 rounded-2xl bg-white shadow-sm border border-slate-100 text-blue-600 group-hover:scale-110 transition-transform duration-300">
-                                    <UploadCloud className="size-8" />
+                                <div className="p-4 rounded-xl bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black group-hover:bg-[#fde047] transition-all duration-300">
+                                    <UploadCloud className="size-10" />
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-sm font-bold text-slate-900">
-                                        Click or drag image
+                                    <p className="text-lg font-black text-black uppercase italic">
+                                        Unlock Upload
                                     </p>
-                                    <p className="text-xs text-slate-500 font-medium">
-                                        Upload your X analytics view
+                                    <p className="text-xs text-slate-500 font-bold uppercase tracking-tight">
+                                        Drop your X analytics view
                                     </p>
                                 </div>
                             </div>
@@ -139,29 +136,28 @@ export function AnalyzeForm({ onAnalyze }: AnalyzeFormProps) {
                     </div>
                 </div>
 
-                {/* Analysis Button (Renamed from Demo Mode) */}
+                {/* Analysis Button */}
                 <button
                     type="button"
                     onClick={() => {
                         if (onAnalyze) {
                             setIsLoading(true);
-                            // Brief delay for effect
                             setTimeout(() => {
-                                onAnalyze({ username: username || 'demo', image: image || new File([], 'demo.png') });
+                                onAnalyze({ username: username || 'pablo', image: image || new File([], 'demo.png') });
                                 setIsLoading(false);
                             }, 1500);
                         }
                     }}
                     disabled={isLoading}
-                    className="w-full py-5 rounded-2xl bg-slate-900 text-white font-black hover:bg-slate-800 shadow-xl shadow-slate-900/10 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 tracking-tight text-lg"
+                    className="w-full py-5 rounded-lg bg-[#4ade80] text-black font-black text-2xl uppercase italic border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-y-[-2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50"
                 >
                     {isLoading ? (
                         <div className="flex items-center justify-center gap-3">
-                            <Loader2 className="size-6 animate-spin" />
-                            <span>Processing...</span>
+                            <Loader2 className="size-8 animate-spin" />
+                            <span>Unlocking...</span>
                         </div>
                     ) : (
-                        'Analysis'
+                        'Unlock Analysis'
                     )}
                 </button>
             </form>

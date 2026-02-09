@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/components/ui/glass-card';
-import { CheckCircle2, AlertTriangle, Info, Download, TrendingUp, Users, Eye, Heart, BarChart3, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, Info, Download, TrendingUp, Users, Eye, Heart, BarChart3, ShieldCheck, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface AnalysisResult {
@@ -26,16 +26,6 @@ interface ResultsDashboardProps {
 }
 
 export function ResultsDashboard({ data, username, onReset }: ResultsDashboardProps) {
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-    useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            setMousePosition({ x: e.clientX, y: e.clientY });
-        };
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, []);
-
     const formatNumber = (num: number) => {
         return new Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(num);
     };
@@ -52,19 +42,19 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
                 animate={{ opacity: 1, scale: 1 }}
                 className="w-full max-w-2xl mx-auto"
             >
-                <div className="p-8 rounded-3xl border border-red-200 bg-red-50 shadow-lg">
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="p-3 rounded-full bg-red-100">
-                            <AlertTriangle className="size-8 text-red-600" />
+                <div className="p-8 border-4 border-black bg-white shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="p-4 bg-red-400 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                            <AlertTriangle className="size-10 text-black fill-white" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-bold text-slate-900">Analysis Failed</h3>
-                            <p className="text-red-700/60">{data.error}</p>
+                            <h3 className="text-3xl font-black text-black uppercase italic">Analysis Failed!</h3>
+                            <p className="text-black font-bold text-lg">{data.error}</p>
                         </div>
                     </div>
                     <button
                         onClick={onReset}
-                        className="mt-6 px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white transition-all shadow-lg"
+                        className="w-full py-4 bg-black text-white font-black text-xl uppercase italic border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] active:translate-y-[2px] transition-all"
                     >
                         Try Again
                     </button>
@@ -90,31 +80,31 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
     const expectedPayoutAvg = verifiedImpAvg * payoutFactor;
 
     return (
-        <div className="w-full max-w-6xl mx-auto space-y-10 pb-20">
+        <div className="w-full max-w-6xl mx-auto space-y-12 pb-20">
 
             {/* Header */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col md:flex-row md:items-end justify-between gap-6"
+                className="flex flex-col md:flex-row md:items-end justify-between gap-8"
             >
-                <div>
-                    <div className="h-1.5 w-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full mb-4" />
-                    <h2 className="text-5xl font-black text-slate-900 tracking-tight leading-tight">
-                        Verified <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Payload</span>
+                <div className="relative">
+                    <div className="h-6 w-48 bg-[#fde047] border-4 border-black absolute -top-4 -left-2 -z-10 rotate-[-1deg]" />
+                    <h2 className="text-6xl md:text-8xl font-black text-black tracking-tighter leading-none uppercase italic">
+                        VERIFIED <span className="bg-black text-white px-4 py-1 inline-block rotate-[1deg]">PAYLOAD</span>
                     </h2>
-                    <p className="text-slate-500 mt-2 text-lg font-medium">Detailed impact assessment for <span className="text-blue-600 font-bold">@{username}</span></p>
+                    <p className="text-2xl font-black text-black mt-4 uppercase italic">Impact assessment for <span className="bg-[#60a5fa] px-3 py-1 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">@{username}</span></p>
                 </div>
                 <button
                     onClick={onReset}
-                    className="px-8 py-3 rounded-2xl bg-white hover:bg-slate-50 text-slate-900 transition-all border border-slate-200 font-bold shadow-sm hover:shadow-md hover:scale-105 active:scale-95"
+                    className="px-10 py-4 bg-white border-4 border-black text-black font-black text-xl uppercase italic shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
                 >
                     New Analysis
                 </button>
             </motion.div>
 
             {/* Payout & Growth Highlights */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
                 {/* Expected Payout Card */}
                 <motion.div
@@ -123,47 +113,47 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
                     transition={{ delay: 0.1 }}
                     className="lg:col-span-2"
                 >
-                    <div className="relative group overflow-hidden rounded-3xl p-8 bg-white border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
-                        <div className="absolute top-0 right-0 p-10 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity">
-                            <BarChart3 size={160} className="text-slate-900" />
+                    <div className="relative group overflow-hidden rounded-3xl p-10 bg-[#fde047] border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] group-hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all">
+                        <div className="absolute top-0 right-0 p-10 opacity-5 grayscale group-hover:opacity-10 transition-opacity">
+                            <BarChart3 size={200} className="text-black" />
                         </div>
                         <div className="relative z-10">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="p-3 rounded-2xl bg-blue-50">
-                                    <TrendingUp className="size-8 text-blue-600" />
+                            <div className="flex items-center gap-4 mb-10">
+                                <div className="p-5 bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rotate-[-3deg]">
+                                    <TrendingUp className="size-10 text-black" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Estimated Ad Revenue</h3>
-                                    <p className="text-slate-600 text-xs font-medium">Based on 5M verified impressions payout model</p>
+                                    <h3 className="text-xl font-black text-black uppercase tracking-widest italic">Est. Ad Revenue</h3>
+                                    <p className="text-black font-bold text-sm bg-white/40 px-2 py-0.5 border-2 border-black w-fit mt-1">5M Verified Model</p>
                                 </div>
                             </div>
 
-                            <div className="flex flex-col md:flex-row md:items-end gap-x-12 gap-y-6">
-                                <div>
-                                    <p className="text-7xl font-black text-slate-900 tracking-tighter">
+                            <div className="flex flex-col md:flex-row md:items-end gap-x-16 gap-y-10">
+                                <div className="bg-white border-4 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rotate-[1deg]">
+                                    <p className="text-8xl font-black text-black tracking-tighter italic">
                                         {formatCurrency(expectedPayoutAvg)}
                                     </p>
-                                    <p className="text-slate-500 mt-1 font-medium text-lg">
-                                        Estimated range: <span className="text-slate-900 font-bold">{formatCurrency(expectedPayoutMin)} - {formatCurrency(expectedPayoutMax)}</span>
+                                    <p className="text-black mt-2 font-black text-xl uppercase italic">
+                                        Range: <span className="bg-black text-white px-2 py-0.5">{formatCurrency(expectedPayoutMin)} - {formatCurrency(expectedPayoutMax)}</span>
                                     </p>
                                 </div>
-                                <div className="space-y-4 flex-1 max-w-xs">
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between text-xs font-bold uppercase tracking-tighter text-slate-400">
+                                <div className="space-y-6 flex-1 max-w-xs">
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between text-sm font-black uppercase tracking-tighter text-black">
                                             <span>Revenue Potential</span>
-                                            <span className="text-blue-600">{data.confidenceScore} Confidence</span>
+                                            <span className="bg-black text-white px-2 py-0.5">{data.confidenceScore} Conf.</span>
                                         </div>
-                                        <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                                        <div className="h-10 w-full bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden p-1">
                                             <motion.div
                                                 initial={{ width: 0 }}
                                                 animate={{ width: data.confidenceScore === 'High' ? '85%' : data.confidenceScore === 'Medium' ? '60%' : '35%' }}
                                                 transition={{ duration: 1.5, delay: 0.5 }}
-                                                className="h-full bg-gradient-to-r from-blue-600 to-indigo-600"
+                                                className="h-full bg-black border-2 border-black"
                                             />
                                         </div>
                                     </div>
-                                    <p className="text-[10px] text-slate-400 leading-tight italic">
-                                        *Estimates assume current ad revenue share rates and verified impression density.
+                                    <p className="text-xs text-black font-black uppercase italic leading-none">
+                                        *Figures based on current ad share heuristics.
                                     </p>
                                 </div>
                             </div>
@@ -177,19 +167,20 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 }}
                 >
-                    <div className="rounded-3xl p-8 bg-emerald-50 border border-emerald-100 h-full flex flex-col justify-between shadow-sm">
+                    <div className="rounded-3xl p-10 bg-[#4ade80] border-4 border-black h-full flex flex-col justify-between shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
                         <div>
-                            <div className="p-3 rounded-2xl bg-white shadow-sm w-fit mb-6">
-                                <ShieldCheck className="size-8 text-emerald-600" />
+                            <div className="p-5 bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-fit mb-10 rotate-[5deg]">
+                                <ShieldCheck className="size-10 text-black" />
                             </div>
-                            <h3 className="text-sm font-bold text-emerald-800/60 uppercase tracking-widest mb-2">Verified Boost</h3>
-                            <p className="text-5xl font-black text-emerald-600 tracking-tighter">
+                            <h3 className="text-lg font-black text-black uppercase tracking-widest mb-2 italic">Verified Boost</h3>
+                            <p className="text-7xl font-black text-black tracking-tighter italic">
                                 +{growthPercentage.toFixed(1)}%
                             </p>
                         </div>
-                        <div className="mt-8 pt-8 border-t border-emerald-200">
-                            <p className="text-sm text-emerald-800/70 font-medium">
-                                Your content is <span className="text-emerald-600 font-black">{(verifiedEngagementRate / engagementRate).toFixed(1)}x</span> more effective with verified users compared to the general audience.
+                        <div className="mt-8 pt-8 border-t-4 border-black">
+                            <p className="text-lg text-black font-black uppercase leading-tight italic">
+                                <span className="bg-black text-white px-2 py-1 inline-block mb-1 rotate-[-2deg]">{(verifiedEngagementRate / engagementRate).toFixed(1)}x EFFECTIVE</span> <br />
+                                with verified users!
                             </p>
                         </div>
                     </div>
@@ -197,47 +188,46 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
             </div>
 
             {/* Main Metrics Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-6">
 
                 {/* Verified Impressions Card */}
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    whileHover={{ translateY: -5 }}
                     className="relative group"
                 >
-                    <div className="rounded-3xl p-8 border border-slate-200 bg-white h-full relative overflow-hidden shadow-md group-hover:shadow-xl transition-all duration-300">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16 blur-2xl" />
+                    <div className="rounded-3xl p-10 bg-[#60a5fa] border-4 border-black h-full relative overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-white border-4 border-black rounded-full -mr-24 -mt-24 grayscale opacity-10" />
 
-                        <div className="flex items-center gap-4 mb-8">
-                            <div className="p-4 rounded-2xl bg-blue-50 border border-blue-100">
-                                <Eye className="size-7 text-blue-600" />
+                        <div className="flex items-center gap-5 mb-10">
+                            <div className="p-5 bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rotate-[-2deg]">
+                                <Eye className="size-10 text-black font-black" />
                             </div>
-                            <h3 className="text-2xl font-black text-slate-900 tracking-tight">Verified Impressions</h3>
+                            <h3 className="text-3xl font-black text-black tracking-tighter uppercase italic">Verified Views</h3>
                         </div>
 
-                        <div className="space-y-8 text-slate-900">
-                            <div>
-                                <p className="text-6xl font-black tracking-tighter">
+                        <div className="space-y-10">
+                            <div className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rotate-[1deg]">
+                                <p className="text-7xl font-black text-black tracking-tighter italic">
                                     {formatNumber(verifiedImpAvg)}
                                 </p>
-                                <p className="text-sm font-bold text-blue-600 mt-2 bg-blue-50 w-fit px-3 py-1 rounded-full">
+                                <p className="text-sm font-black text-black mt-2 uppercase italic bg-[#fde047] w-fit px-3 py-1 border-2 border-black">
                                     Range: {formatNumber(data.verifiedImpressions.min)} — {formatNumber(data.verifiedImpressions.max)}
                                 </p>
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="space-y-5">
                                 <div className="flex justify-between items-end">
-                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Impression Density</span>
-                                    <span className="text-xl font-black text-blue-600">{data.verifiedImpressionPercentage}%</span>
+                                    <span className="text-sm font-black text-black uppercase tracking-widest italic">Impression Density</span>
+                                    <span className="text-2xl font-black text-white bg-black px-3 py-1 rotate-[-2deg]">{data.verifiedImpressionPercentage}%</span>
                                 </div>
-                                <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden p-1">
+                                <div className="h-8 w-full bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden p-1">
                                     <motion.div
                                         initial={{ width: 0 }}
                                         animate={{ width: `${data.verifiedImpressionPercentage}%` }}
                                         transition={{ duration: 1.2, delay: 0.8 }}
-                                        className="h-full bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full"
+                                        className="h-full bg-black"
                                     />
                                 </div>
                             </div>
@@ -250,34 +240,33 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    whileHover={{ translateY: -5 }}
                     className="relative group"
                 >
-                    <div className="rounded-3xl p-8 border border-slate-200 bg-white h-full relative overflow-hidden shadow-md group-hover:shadow-xl transition-all duration-300">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-full -mr-16 -mt-16 blur-2xl" />
+                    <div className="rounded-3xl p-10 bg-[#f472b6] border-4 border-black h-full relative overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-white border-4 border-black rounded-full -mr-24 -mt-24 grayscale opacity-10" />
 
-                        <div className="flex items-center gap-4 mb-8">
-                            <div className="p-4 rounded-2xl bg-purple-50 border border-purple-100">
-                                <Heart className="size-7 text-purple-600" />
+                        <div className="flex items-center gap-5 mb-10">
+                            <div className="p-5 bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rotate-[3deg]">
+                                <Heart className="size-10 text-black fill-black" />
                             </div>
-                            <h3 className="text-2xl font-black text-slate-900 tracking-tight">Verified Engagement</h3>
+                            <h3 className="text-3xl font-black text-black tracking-tighter uppercase italic">Verified Impact</h3>
                         </div>
 
-                        <div className="space-y-8 text-slate-900">
-                            <div>
-                                <p className="text-6xl font-black tracking-tighter">
+                        <div className="space-y-10">
+                            <div className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rotate-[-1deg]">
+                                <p className="text-7xl font-black text-black tracking-tighter italic">
                                     {formatNumber(verifiedEngAvg)}
                                 </p>
-                                <p className="text-sm font-bold text-purple-600 mt-2 bg-purple-50 w-fit px-3 py-1 rounded-full">
-                                    Interactions: {formatNumber(data.verifiedEngagements.min)} — {formatNumber(data.verifiedEngagements.max)}
+                                <p className="text-sm font-black text-black mt-2 uppercase italic bg-[#4ade80] w-fit px-3 py-1 border-2 border-black">
+                                    Expected: {formatNumber(data.verifiedEngagements.min)} — {formatNumber(data.verifiedEngagements.max)}
                                 </p>
                             </div>
 
-                            <div className="flex gap-3 pt-2">
-                                <div className="px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold uppercase tracking-widest">
+                            <div className="flex gap-4 pt-4">
+                                <div className="px-6 py-3 bg-black text-white text-xs font-black uppercase tracking-widest rotate-[-1deg] border-2 border-black">
                                     High Quality Reach
                                 </div>
-                                <div className="px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold uppercase tracking-widest">
+                                <div className="px-6 py-3 bg-white text-black text-xs font-black uppercase tracking-widest border-2 border-black rotate-[2deg]">
                                     {data.timeRange}
                                 </div>
                             </div>
@@ -287,7 +276,7 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
             </div>
 
             {/* Breakdown & Analysis */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
                 {/* Visual Data Breakdown */}
                 <motion.div
@@ -295,35 +284,35 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
                 >
-                    <div className="p-8 h-full bg-white rounded-3xl border border-slate-200 shadow-sm">
-                        <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-3 tracking-tight">
-                            <span className="h-6 w-1.5 bg-blue-600 rounded-full" />
+                    <div className="p-10 h-full bg-white border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+                        <h3 className="text-4xl font-black text-black mb-10 flex items-center gap-4 tracking-tighter uppercase italic">
+                            <Zap className="size-8 fill-[#fde047]" />
                             Volume Distribution
                         </h3>
 
-                        <div className="space-y-6">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 group transition-colors">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Impressions</p>
-                                    <p className="text-3xl font-black text-slate-900">{formatNumber(totalImpressions)}</p>
-                                    <div className="mt-4 h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
-                                        <div className="h-full bg-blue-600 w-full opacity-30" />
+                        <div className="space-y-8">
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="p-6 bg-[#f7f3eb] border-4 border-black rotate-[-1deg] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                    <p className="text-[10px] font-black text-black uppercase tracking-widest mb-2">Total Impressions</p>
+                                    <p className="text-3xl font-black text-black italic">{formatNumber(totalImpressions)}</p>
+                                    <div className="mt-4 h-4 w-full bg-white border-2 border-black p-0.5">
+                                        <div className="h-full bg-[#60a5fa] w-full border-r-2 border-black" />
                                     </div>
                                 </div>
-                                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 group transition-colors">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Engagements</p>
-                                    <p className="text-3xl font-black text-slate-900">{formatNumber(totalEngagements)}</p>
-                                    <div className="mt-4 h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
-                                        <div className="h-full bg-purple-600 w-full opacity-30" />
+                                <div className="p-6 bg-[#f7f3eb] border-4 border-black rotate-[1deg] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                    <p className="text-[10px] font-black text-black uppercase tracking-widest mb-2">Total Engagements</p>
+                                    <p className="text-3xl font-black text-black italic">{formatNumber(totalEngagements)}</p>
+                                    <div className="mt-4 h-4 w-full bg-white border-2 border-black p-0.5">
+                                        <div className="h-full bg-[#f472b6] w-full border-r-2 border-black" />
                                     </div>
                                 </div>
-                                <div className="p-5 rounded-2xl bg-slate-50/50 border border-slate-100/50">
-                                    <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest mb-1">Non-Verified Reach</p>
-                                    <p className="text-2xl font-bold text-slate-400">{formatNumber(nonVerifiedImpressions)}</p>
+                                <div className="p-6 bg-[#f7f3eb]/40 border-2 border-dashed border-black">
+                                    <p className="text-[10px] font-black text-black opacity-40 uppercase tracking-widest mb-2">Non-Verified Reach</p>
+                                    <p className="text-2xl font-black text-black/40 italic">{formatNumber(nonVerifiedImpressions)}</p>
                                 </div>
-                                <div className="p-5 rounded-2xl bg-slate-50/50 border border-slate-100/50">
-                                    <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest mb-1">Non-Verified Eng.</p>
-                                    <p className="text-2xl font-bold text-slate-400">{formatNumber(nonVerifiedEngagements)}</p>
+                                <div className="p-6 bg-[#f7f3eb]/40 border-2 border-dashed border-black">
+                                    <p className="text-[10px] font-black text-black opacity-40 uppercase tracking-widest mb-2">Non-Verified Eng.</p>
+                                    <p className="text-2xl font-black text-black/40 italic">{formatNumber(nonVerifiedEngagements)}</p>
                                 </div>
                             </div>
                         </div>
@@ -336,36 +325,36 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 }}
                 >
-                    <div className="p-8 h-full bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden relative">
-                        <div className="absolute bottom-0 right-0 w-64 h-64 bg-slate-50 rounded-full -mb-32 -mr-32 blur-3xl opacity-50" />
+                    <div className="p-10 h-full bg-white border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden">
+                        <div className="absolute bottom-0 right-0 w-64 h-64 bg-[#fde047] opacity-20 rotate-45 -mb-32 -mr-32" />
 
-                        <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-3 tracking-tight">
-                            <span className="h-6 w-1.5 bg-indigo-600 rounded-full" />
+                        <h3 className="text-4xl font-black text-black mb-10 flex items-center gap-4 tracking-tighter uppercase italic">
+                            <Info className="size-8" />
                             Methodology
                         </h3>
 
-                        <div className="space-y-6 text-slate-500 relative z-10 font-medium">
-                            <p className="text-base leading-relaxed">
-                                To estimate <span className="text-slate-900 font-bold">Verified Reach</span>, we simulate X's core heuristic: filtering impressions from accounts with active blue-check badges.
+                        <div className="space-y-8 text-black relative z-10 font-bold">
+                            <p className="text-lg leading-tight uppercase italic">
+                                We simulate <span className="bg-[#fde047] px-2">Verified Reach</span> via X's core heuristic: filtering impressions from accounts with active blue-check badges.
                             </p>
 
-                            <ul className="space-y-3">
+                            <ul className="space-y-4">
                                 {[
-                                    { label: 'Impression Weight', val: '4% — 9%', color: 'text-blue-600', bg: 'bg-blue-50' },
-                                    { label: 'Engagement Weight', val: '8% — 15%', color: 'text-purple-600', bg: 'bg-purple-50' },
-                                    { label: 'V-RPM (Revenue)', val: '$1.70 / 1M', color: 'text-emerald-600', bg: 'bg-emerald-50' }
+                                    { label: 'Impression Weight', val: '4-9%', bg: 'bg-[#60a5fa]' },
+                                    { label: 'Engagement Weight', val: '8-15%', bg: 'bg-[#f472b6]' },
+                                    { label: 'V-RPM (Revenue)', val: '$1.70/1M', bg: 'bg-[#4ade80]' }
                                 ].map((item, idx) => (
-                                    <li key={idx} className={cn("flex items-center justify-between p-3.5 rounded-2xl border border-slate-50", item.bg)}>
-                                        <span className="text-xs font-bold uppercase tracking-widest opacity-60">{item.label}</span>
-                                        <span className={cn("font-black text-lg", item.color)}>{item.val}</span>
+                                    <li key={idx} className={cn("flex items-center justify-between p-4 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]", item.bg, idx % 2 === 0 ? "rotate-[-1deg]" : "rotate-[1deg]")}>
+                                        <span className="text-xs font-black uppercase tracking-widest">{item.label}</span>
+                                        <span className="font-black text-2xl italic uppercase">{item.val}</span>
                                     </li>
                                 ))}
                             </ul>
 
-                            <div className="flex items-start gap-3 p-4 rounded-2xl bg-amber-50 border border-amber-100 mt-4">
-                                <AlertTriangle className="size-5 text-amber-600 shrink-0 mt-0.5" />
-                                <p className="text-[11px] leading-tight text-amber-800 font-bold uppercase tracking-tight">
-                                    Unofficial data science projections based on creator correlations. Not affiliated with X Corp.
+                            <div className="flex items-start gap-4 p-5 bg-black text-[#fde047] border-4 border-black mt-8 rotate-[-1deg]">
+                                <AlertTriangle className="size-8 shrink-0 fill-[#fde047]" />
+                                <p className="text-[10px] leading-tight font-black uppercase tracking-tight">
+                                    Unofficial data projections based on creator correlations. Not affiliated with X Corp.
                                 </p>
                             </div>
                         </div>
@@ -378,19 +367,19 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.7 }}
-                className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-10 print:hidden"
+                className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-12 print:hidden"
             >
                 <button
                     onClick={() => window.print()}
-                    className="group flex items-center gap-3 px-10 py-5 rounded-3xl bg-slate-900 text-white font-black tracking-tight shadow-xl shadow-slate-900/10 transition-all hover:scale-105 active:scale-95"
+                    className="flex items-center gap-4 px-12 py-6 bg-black text-white font-black text-2xl uppercase italic border-4 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] active:translate-y-[2px] transition-all"
                 >
-                    <Download className="size-5" />
+                    <Download className="size-6" />
                     Export Report
                 </button>
                 <button
-                    className="flex items-center gap-3 px-10 py-5 rounded-3xl bg-white text-slate-900 border border-slate-200 font-black tracking-tight shadow-sm hover:shadow-md transition-all hover:scale-105 active:scale-95"
+                    className="flex items-center gap-4 px-12 py-6 bg-[#fde047] text-black font-black text-2xl uppercase italic border-4 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] active:translate-y-[2px] transition-all"
                 >
-                    <Users className="size-5" />
+                    <Users className="size-6" />
                     Share Results
                 </button>
             </motion.div>

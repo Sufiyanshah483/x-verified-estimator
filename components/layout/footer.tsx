@@ -1,18 +1,18 @@
 export function Footer() {
     return (
-        <footer className="border-t border-slate-200 bg-white/80 py-8 backdrop-blur-md">
+        <footer className="border-t-4 border-black bg-white py-12">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="flex flex-col items-center justify-between gap-4 md:flex-row text-sm text-slate-500 font-medium">
-                    <p>© {new Date().getFullYear()} X Verified Estimator. All rights reserved.</p>
-                    <div className="flex gap-6">
-                        <span className="hover:text-slate-900 cursor-pointer transition-colors">Privacy</span>
-                        <span className="hover:text-slate-900 cursor-pointer transition-colors">Terms</span>
+                <div className="flex flex-col items-center justify-between gap-8 md:flex-row text-sm font-black text-black">
+                    <p className="uppercase italic">© {new Date().getFullYear()} X Verified Estimator. All Rights Reserved.</p>
+                    <div className="flex gap-8">
+                        <span className="hover:bg-[#fde047] cursor-pointer transition-all px-2 border-2 border-transparent hover:border-black uppercase">Privacy</span>
+                        <span className="hover:bg-[#fde047] cursor-pointer transition-all px-2 border-2 border-transparent hover:border-black uppercase">Terms</span>
                     </div>
                 </div>
-                <div className="mt-8 text-center text-[10px] text-slate-400 max-w-2xl mx-auto uppercase tracking-tighter leading-relaxed">
+                <div className="mt-12 text-center text-[10px] text-black font-black max-w-2xl mx-auto uppercase tracking-tighter leading-snug bg-[#f7f3eb] p-6 border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rotate-[-1deg]">
                     <p>
-                        Disclaimer: This tool provides <strong>heuristic projections</strong> based on creator correlations.
-                        Not affiliated with X (Twitter). Results are for informational purposes and vary based on niche.
+                        Disclaimer: This tool provides <span className="underline decoration-4 decoration-[#fde047]">heuristic projections</span> based on creator correlations.
+                        Not affiliated with X (Twitter). Results are for informational purposes and vary based on niche. NO GUARANTEES.
                     </p>
                 </div>
             </div>
