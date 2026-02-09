@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Logo } from '@/components/ui/logo';
+import { Menu } from 'lucide-react';
 
 export function Header() {
     return (
@@ -9,10 +10,18 @@ export function Header() {
                     <Logo />
                 </Link>
 
-                <div className="hidden md:block">
-                    <span className="text-sm font-black text-black uppercase tracking-tighter bg-[#fde047] border-2 border-black px-3 py-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <div className="hidden md:flex items-center gap-6">
+                    <span className="text-sm font-black text-black uppercase tracking-tighter bg-[#fde047] border-2 border-black px-3 py-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] cursor-pointer">
                         Creator Intelligence
                     </span>
+                    <button className="text-sm font-black uppercase italic border-b-2 border-black">The Menu</button>
+                    <button className="text-sm font-black uppercase italic border-b-2 border-black">Pricing</button>
+                </div>
+
+                <div className="md:hidden">
+                    <button className="p-2 bg-[#fde047] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                        <Menu size={24} />
+                    </button>
                 </div>
             </div>
         </header>

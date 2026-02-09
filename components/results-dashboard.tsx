@@ -79,14 +79,42 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
     const expectedPayoutMax = data.verifiedImpressions.max * payoutFactor;
     const expectedPayoutAvg = verifiedImpAvg * payoutFactor;
 
+    // Celebration effect items
+    const confettiColors = ['#fde047', '#60a5fa', '#4ade80', '#f472b6', '#c084fc'];
+
     return (
-        <div className="w-full max-w-6xl mx-auto space-y-12 pb-20">
+        <div className="w-full max-w-6xl mx-auto space-y-12 pb-20 relative">
+
+            {/* Celebration Particles */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-64 pointer-events-none overflow-hidden flex items-center justify-center">
+                {confettiColors.map((color, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute border-2 border-black"
+                        initial={{ opacity: 0, scale: 0, y: 0, x: 0, rotate: 0 }}
+                        animate={{
+                            opacity: [0, 1, 0],
+                            scale: [0, 1.5, 0],
+                            y: [0, -200 - (i * 20)],
+                            x: [(i - 2) * 80, (i - 2) * 120],
+                            rotate: [0, 90, 180]
+                        }}
+                        transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            repeatDelay: 3,
+                            delay: i * 0.2
+                        }}
+                        style={{ width: 24, height: 24, backgroundColor: color }}
+                    />
+                ))}
+            </div>
 
             {/* Header */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col md:flex-row md:items-end justify-between gap-8"
+                className="flex flex-col md:flex-row md:items-end justify-between gap-8 pt-8"
             >
                 <div className="relative">
                     <div className="h-6 w-48 bg-[#fde047] border-4 border-black absolute -top-4 -left-2 -z-10 rotate-[-1deg]" />
