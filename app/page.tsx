@@ -8,7 +8,7 @@ import { AnalyzeForm } from '@/components/analyze-form';
 import { ResultsDashboard, AnalysisResult } from '@/components/results-dashboard';
 import { FloatingShapes } from '@/components/ui/floating-shapes';
 import { CursorGlow } from '@/components/ui/cursor-glow';
-import { UploadCloud, Sparkles, ArrowRight } from 'lucide-react';
+import { UploadCloud, Sparkles, Zap, ShieldCheck, BarChart3 } from 'lucide-react';
 import { analyzeDemoScreenshot } from '@/actions/demo-analyze';
 
 export default function Home() {
@@ -98,6 +98,33 @@ export default function Home() {
                                             Start Analysis
                                         </button>
                                     </div>
+                                </div>
+                            </div>
+
+                            {/* Features Section - Styled like the requested image but in Neubrutalism */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 text-left">
+                                <div className="p-8 bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rotate-[-1deg] hover:rotate-0 transition-all">
+                                    <div className="w-12 h-12 bg-[#fde047] border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center mb-6">
+                                        <Zap className="size-6 text-black fill-white" />
+                                    </div>
+                                    <h4 className="text-xl font-black uppercase italic mb-2 tracking-tighter">Instant Vision API</h4>
+                                    <p className="text-sm font-bold text-slate-600 leading-snug">Our AI reads your screenshot data in seconds with high accuracy.</p>
+                                </div>
+
+                                <div className="p-8 bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rotate-[1deg] hover:rotate-0 transition-all">
+                                    <div className="w-12 h-12 bg-[#4ade80] border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center mb-6">
+                                        <ShieldCheck className="size-6 text-black fill-white" />
+                                    </div>
+                                    <h4 className="text-xl font-black uppercase italic mb-2 tracking-tighter">Verified Estimation</h4>
+                                    <p className="text-sm font-bold text-slate-600 leading-snug">Heuristic models compliant with public engagement patterns.</p>
+                                </div>
+
+                                <div className="p-8 bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rotate-[-1deg] hover:rotate-0 transition-all">
+                                    <div className="w-12 h-12 bg-[#c084fc] border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center mb-6">
+                                        <BarChart3 className="size-6 text-black fill-white" />
+                                    </div>
+                                    <h4 className="text-xl font-black uppercase italic mb-2 tracking-tighter">Impact Breakdown</h4>
+                                    <p className="text-sm font-bold text-slate-600 leading-snug">See estimated ranges for likes, replies, and reposts.</p>
                                 </div>
                             </div>
                         </motion.section>
