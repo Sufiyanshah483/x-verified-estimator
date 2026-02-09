@@ -7,7 +7,6 @@ import { Footer } from '@/components/layout/footer';
 import { AnalyzeForm } from '@/components/analyze-form';
 import { ResultsDashboard, AnalysisResult } from '@/components/results-dashboard';
 import { FloatingShapes } from '@/components/ui/floating-shapes';
-import { CursorGlow } from '@/components/ui/cursor-glow';
 import { UploadCloud, Sparkles, Zap, ShieldCheck, BarChart3 } from 'lucide-react';
 import { analyzeDemoScreenshot } from '@/actions/demo-analyze';
 
@@ -37,12 +36,8 @@ export default function Home() {
     return (
         <div className="flex min-h-screen flex-col relative overflow-hidden bg-[#f7f3eb] text-black selection:bg-[#fde047]">
 
-            {/* Custom Background Elements - More blocky and colorful */}
-            <div className="fixed inset-0 pointer-events-none opacity-20">
-                <div className="absolute top-20 left-[10%] w-64 h-64 bg-[#60a5fa] border-4 border-black rotate-12" />
-                <div className="absolute bottom-40 right-[15%] w-80 h-80 bg-[#4ade80] border-4 border-black -rotate-6" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border-4 border-black/10 dashed" />
-            </div>
+            {/* Interactive Neubrutalist Shapes */}
+            <FloatingShapes />
 
             <Header />
 
