@@ -18,3 +18,11 @@ description: How to deploy this project to Vercel for continuous deployment.
    - Add `OPENAI_API_KEY` with your OpenAI API key.
 9. Click "Deploy".
 10. Your project will automatically rebuild and deploy whenever you push new changes to the repository.
+
+### Manual CLI Deployment
+If you prefer identifying the Vercel CLI manually:
+```bash
+# Run this from the project root
+node node_modules/vercel/dist/vc.js deploy
+```
+Follow the interactive prompts to log in and deploy.

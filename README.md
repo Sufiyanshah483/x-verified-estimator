@@ -36,7 +36,7 @@ A Next.js application that estimates verified impressions and engagements for X 
    ```bash
    npm run dev
    ```
-   Open [http://localhost:3000](http://localhost:3000) inside of this AI preview environment.
+   Open [http://localhost:3](000http://localhost:3000) inside of this AI preview environment.
 
 ## Usage
 
@@ -56,6 +56,22 @@ Deploy easily with [Vercel](https://vercel.com/new?utm_medium=default-template&f
 4. Deploy!
 
 For verified manual setup, see `.agent/workflows/deploy_to_vercel.md`.
+
+Or deploy directly from the command line:
+```bash
+# Run this if 'npx vercel' fails
+node node_modules/vercel/dist/vc.js deploy
+```
+
+## GitHub Setup
+To push this project to GitHub:
+1. Create a new repository named `x-verified-estimator` on [GitHub](https://github.com/new).
+2. Run the following command:
+   ```bash
+   git branch -M main
+   git push -u origin main
+   ```
+   *(Note: The remote origin has already been configured for you locally)*
 
 ## Disclaimer
 

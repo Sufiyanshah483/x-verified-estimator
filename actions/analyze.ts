@@ -131,14 +131,39 @@ export async function analyzeScreenshot(formData: FormData): Promise<AnalysisRes
         };
 
     } catch (error) {
-        console.error("Analysis Error:", error);
+        console.error("Analysis Error Details:", {
+            error,
+            message: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : undefined,
+            apiKeyExists: !!process.env.OPENAI_API_KEY,
+            apiKeyLength: process.env.OPENAI_API_KEY?.length || 0
+        });
+
+        let errorMessage = "Failed to analyze image. ";
+
+        if (!process.env.OPENAI_API_KEY) {
+            errorMessage = "OpenAI API key is not configured. Please add OPENAI_API_KEY to your .env.local file.";
+        } else if (error instanceof Error) {
+            if (error.message.includes('API key')) {
+                errorMessage = "Invalid OpenAI API key. Please check your API key in .env.local or Vercel environment variables.";
+            } else if (error.message.includes('rate limit')) {
+                errorMessage = "OpenAI API rate limit exceeded. Please try again in a moment.";
+            } else if (error.message.includes('timeout')) {
+                errorMessage = "Request timed out. Please try again.";
+            } else {
+                errorMessage += error.message;
+            }
+        } else {
+            errorMessage += "Please ensure it's a clear screenshot of X analytics.";
+        }
+
         return {
             verifiedImpressions: { min: 0, max: 0 },
             verifiedEngagements: { min: 0, max: 0 },
             verifiedImpressionPercentage: 0,
             confidenceScore: 'Low',
             timeRange: 'N/A',
-            error: "Failed to analyze image. Please ensure it's a clear screenshot of X analytics."
+            error: errorMessage
         };
     }
 }

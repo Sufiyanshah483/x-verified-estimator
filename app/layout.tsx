@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { Inter } from 'next/font/google';
+import { Inter, Outfit } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
 
 export const metadata: Metadata = {
-    title: 'X Verified Estimator',
-    description: 'Estimate your verified impressions and engagements on X.',
+    title: 'X Verified Estimator - Check Your Verified Reach',
+    description: 'Estimate your verified impressions, engagements, and expected revenue payload on X.',
 };
 
 export default function RootLayout({
@@ -16,7 +17,10 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body className={inter.className}>{children}</body>
+            <body className={`${inter.variable} ${outfit.variable} font-sans selection:bg-blue-500/30 selection:text-white`}>
+                {children}
+            </body>
         </html>
     );
 }
+
