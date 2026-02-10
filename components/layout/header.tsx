@@ -15,7 +15,7 @@ export function Header() {
                         Creator Intelligence
                     </span>
                     <a href="#creator-menu" className="text-sm font-black uppercase italic border-b-2 border-black">The Menu</a>
-                    <a href="#newsletter" className="text-sm font-black uppercase italic border-b-2 border-black">Pricing</a>
+                    <a href="#newsletter" className="text-sm font-black uppercase italic border-b-2 border-black">Free Tools</a>
                 </div>
 
                 <div className="md:hidden">

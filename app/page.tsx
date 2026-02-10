@@ -175,9 +175,9 @@ export default function Home() {
                                     <div className="bg-white border-4 border-black p-8 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] space-y-4 rotate-[-1deg]">
                                         <div className="flex justify-between items-center border-b-4 border-black pb-2">
                                             <h5 className="text-2xl font-black uppercase italic">01. THE VISION CRUNCH</h5>
-                                            <span className="bg-black text-white px-2 py-1 font-black text-sm">PRO</span>
+                                            <span className="bg-black text-white px-2 py-1 font-black text-sm">FREE</span>
                                         </div>
-                                        <p className="font-bold text-slate-600 leading-tight">Our AI Vision API deep-scans your screenshots for hidden engagement patterns, verifying every pixel of your reach.</p>
+                                        <p className="font-bold text-slate-600 leading-tight">Our AI Vision API deep-scans your screenshots for engagement patterns, verifying every pixel of your reach at zero cost.</p>
                                     </div>
 
                                     <div className="bg-[#60a5fa] border-4 border-black p-8 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] space-y-4 rotate-[1.5deg]">
@@ -191,7 +191,7 @@ export default function Home() {
                                     <div className="bg-[#f472b6] border-4 border-black p-8 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] space-y-4 rotate-[-0.5deg]">
                                         <div className="flex justify-between items-center border-b-4 border-black pb-2">
                                             <h5 className="text-2xl font-black uppercase italic text-black">03. PAYOUT TOPPING</h5>
-                                            <span className="bg-black text-white px-2 py-1 font-black text-sm">PREMIUM</span>
+                                            <span className="bg-black text-white px-2 py-1 font-black text-sm">FREE</span>
                                         </div>
                                         <p className="font-black text-black leading-tight">Get an accurate revenue projection based on current X-Ad-Share rates. See what your content is really worth.</p>
                                     </div>
@@ -199,7 +199,7 @@ export default function Home() {
                                     <div className="bg-white border-4 border-black p-8 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] space-y-4 rotate-[1deg]">
                                         <div className="flex justify-between items-center border-b-4 border-black pb-2">
                                             <h5 className="text-2xl font-black uppercase italic">04. GROWTH DRESSING</h5>
-                                            <span className="bg-[#4ade80] text-black px-2 py-1 font-black text-sm border-2 border-black">CORE</span>
+                                            <span className="bg-[#4ade80] text-black px-2 py-1 font-black text-sm border-2 border-black">FREE</span>
                                         </div>
                                         <p className="font-bold text-slate-600 leading-tight">Actionable insights on how to boost your verified engagement by up to 40% using targeted formatting.</p>
                                     </div>
