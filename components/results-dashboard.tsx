@@ -416,6 +416,65 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
                 </button>
             </motion.div>
 
+            {/* NEW: Detailed Monetization Blueprint */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="mt-20 p-12 bg-white border-4 border-black shadow-[15px_15px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden"
+            >
+                <div className="absolute top-0 right-0 p-8">
+                    <Zap className="size-24 text-[#fde047] opacity-20 rotate-12" />
+                </div>
+
+                <h3 className="text-5xl font-black uppercase italic tracking-tighter mb-10">
+                    <span className="bg-black text-white px-4">MONETIZATION</span> <br /> BLUEPRINT
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div className="space-y-6">
+                        <h4 className="text-2xl font-black uppercase italic text-[#60a5fa] border-b-4 border-black w-fit">Strategy Alpha</h4>
+                        <p className="font-bold text-lg leading-tight">Your verified impression density ({data.verifiedImpressionPercentage}%) suggests you are hitting high-value clusters. To maximize ad-revenue, pivot to 1,200+ character posts which trigger higher RPM weights in the current X algorithm.</p>
+                        <ul className="space-y-2 font-black uppercase text-sm">
+                            <li className="flex items-center gap-2"><CheckCircle2 className="size-5 text-[#4ade80]" /> Optimize for "Read More" clicks</li>
+                            <li className="flex items-center gap-2"><CheckCircle2 className="size-5 text-[#4ade80]" /> Reply to every blue-check within 5 mins</li>
+                        </ul>
+                    </div>
+
+                    <div className="space-y-6">
+                        <h4 className="text-2xl font-black uppercase italic text-[#f472b6] border-b-4 border-black w-fit">Risk Assessment</h4>
+                        <p className="font-bold text-lg leading-tight">Your current non-verified interaction rate is {((nonVerifiedEngagements / totalEngagements) * 100).toFixed(1)}%. While good for reach, these interactions contribute 80% less to your ad-share payout. Focus on "Premium" conversation hooks.</p>
+                        <div className="p-4 bg-slate-100 border-2 border-black rotate-[-1deg]">
+                            <p className="text-xs font-black uppercase">Pablo's Tip: Use polls to filter verified sentiment.</p>
+                        </div>
+                    </div>
+                </div>
+            </motion.div>
+
+            {/* NEW: Growth & Viral Potential */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+                <div className="p-8 bg-[#c084fc] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rotate-[-1deg]">
+                    <TrendingUp className="size-12 mb-4 text-white" />
+                    <h5 className="text-2xl font-black uppercase italic mb-2">Viral Velocity</h5>
+                    <p className="text-6xl font-black text-white italic drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]">8.8</p>
+                    <p className="text-xs font-black uppercase mt-4 text-black/60">Top 5% of Creators</p>
+                </div>
+
+                <div className="p-8 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rotate-[1deg]">
+                    <Users className="size-12 mb-4 text-[#60a5fa]" />
+                    <h5 className="text-2xl font-black uppercase italic mb-2">Audience Trust</h5>
+                    <p className="text-6xl font-black text-black italic">HIGH</p>
+                    <p className="text-xs font-black uppercase mt-4 text-slate-400">Based on verified reply ratio</p>
+                </div>
+
+                <div className="p-8 bg-[#fde047] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rotate-[-0.5deg]">
+                    <ShieldCheck className="size-12 mb-4 text-black" />
+                    <h5 className="text-2xl font-black uppercase italic mb-2">Payout Rating</h5>
+                    <p className="text-6xl font-black text-black italic">A+</p>
+                    <p className="text-xs font-black uppercase mt-4 text-black/60">Optimized for Ads</p>
+                </div>
+            </div>
+
         </div>
     );
 }

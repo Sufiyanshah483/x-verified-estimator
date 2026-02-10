@@ -154,14 +154,13 @@ export default function Home() {
                     )}
                 </AnimatePresence>
 
-                <AnimatePresence mode="wait">
-                    {view === 'hero' && (
+                {/* Direct View Rendering for maximum reliability */}
+                <div className="w-full">
+                    {view === 'hero' && !isInternalLoading && (
                         <motion.section
                             key="hero"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.5 }}
                             className="w-full max-w-4xl mx-auto text-center space-y-10 mb-20"
                         >
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#fde047] border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-xs font-black text-black uppercase tracking-widest animate-bounce">
@@ -207,7 +206,7 @@ export default function Home() {
                                 </div>
                             </div>
 
-                            {/* Features Section - Styled like the requested image but in Neubrutalism */}
+                            {/* Features Section */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 text-left">
                                 <div className="p-8 bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rotate-[-1deg] hover:rotate-0 transition-all">
                                     <div className="w-12 h-12 bg-[#fde047] border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center mb-6">
@@ -234,8 +233,8 @@ export default function Home() {
                                 </div>
                             </div>
 
-                            {/* The Creator Menu - New Section */}
-                            <div id="creator-menu" className="mt-32 w-full max-w-5xl mx-auto space-y-12">
+                            {/* The Creator Menu */}
+                            <div id="creator-menu" className="mt-32 w-full max-w-5xl mx-auto space-y-12 text-left">
                                 <div className="text-center relative">
                                     <h2 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter">
                                         THE CREATOR <span className="bg-[#fde047] px-4 py-1 border-4 border-black inline-block rotate-2 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">MENU</span>
@@ -279,7 +278,7 @@ export default function Home() {
                             </div>
 
                             {/* Newsletter / Join Section */}
-                            <div id="newsletter" className="mt-40 w-full max-w-4xl mx-auto p-12 bg-black text-white border-4 border-black shadow-[15px_15px_0px_0px_rgba(15,23,42,0.1)] relative overflow-hidden">
+                            <div id="newsletter" className="mt-40 w-full max-w-4xl mx-auto p-12 bg-black text-white border-4 border-black shadow-[15px_15px_0px_0px_rgba(15,23,42,0.1)] relative overflow-hidden text-left">
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#fde047] rotate-45 translate-x-32 -translate-y-32" />
                                 <div className="relative z-10 space-y-8">
                                     <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter leading-none">
@@ -321,13 +320,11 @@ export default function Home() {
                         </motion.section>
                     )}
 
-                    {view === 'analyzing' && (
+                    {view === 'analyzing' && !isInternalLoading && (
                         <motion.div
                             key="analyzing"
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            transition={{ duration: 0.4 }}
                             className="w-full max-w-md mx-auto py-12"
                         >
                             <div className="text-center mb-10">
@@ -346,18 +343,18 @@ export default function Home() {
                         </motion.div>
                     )}
 
-                    {view === 'results' && results && (
+                    {view === 'results' && results && !isInternalLoading && (
                         <motion.div
                             key="results"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
                             className="w-full"
                         >
                             <ResultsDashboard data={results} username={username} onReset={handleReset} />
                         </motion.div>
                     )}
-                </AnimatePresence>
+                </div>
+
             </main>
 
             <Footer />
