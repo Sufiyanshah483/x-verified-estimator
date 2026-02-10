@@ -416,6 +416,11 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
                     Export Report
                 </button>
                 <button
+                    onClick={() => {
+                        const text = encodeURIComponent(`I just analyzed my X Verified impact with X-Verified Estimator! 🥪🚀\n\nVerified Outreach: ${formatNumber(verifiedImpAvg)}\nRetention: ${data.retentionRate}%\n\nCheck yours at-`);
+                        const url = encodeURIComponent('https://x-verified-estimator.vercel.app');
+                        window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+                    }}
                     className="flex items-center gap-4 px-12 py-6 bg-[#fde047] text-black font-black text-2xl uppercase italic border-4 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] active:translate-y-[2px] transition-all"
                 >
                     <Users className="size-6" />
