@@ -9,11 +9,31 @@ import { ResultsDashboard, AnalysisResult } from '@/components/results-dashboard
 import { FloatingShapes } from '@/components/ui/floating-shapes';
 import { UploadCloud, Sparkles, Zap, ShieldCheck, BarChart3 } from 'lucide-react';
 import { analyzeDemoScreenshot } from '@/actions/demo-analyze';
+import { analyzeScreenshot } from '@/actions/analyze';
+import { subscribeNewsletter } from '@/actions/newsletter';
+import { cn } from '@/lib/utils';
 
 export default function Home() {
     const [view, setView] = useState<'hero' | 'analyzing' | 'results'>('hero');
     const [results, setResults] = useState<AnalysisResult | null>(null);
     const [username, setUsername] = useState<string>('');
+
+    // Newsletter State
+    const [email, setEmail] = useState('');
+    const [isSubscribing, setIsSubscribing] = useState(false);
+    const [subMessage, setSubMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
+
+    const handleSubscribe = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!email) return;
+
+        setIsSubscribing(true);
+        const res = await subscribeNewsletter(email);
+        setIsSubscribing(false);
+
+        setSubMessage({ text: res.message, type: res.success ? 'success' : 'error' });
+        if (res.success) setEmail('');
+    };
 
     const handleStartAnalysis = () => {
         setView('analyzing');
@@ -21,9 +41,28 @@ export default function Home() {
 
     const handleAnalyze = async (data: { username: string; image: File }) => {
         setUsername(data.username);
-        // We'll use the demo action for now
-        const result = await analyzeDemoScreenshot();
-        setResults(result);
+
+        const formData = new FormData();
+        formData.append('image', data.image);
+        formData.append('username', data.username);
+
+        try {
+            const result = await analyzeScreenshot(formData);
+
+            // If the real analysis fails because of missing API key, fall back to demo
+            if (result.error && result.error.includes("API key is not configured")) {
+                console.warn("Falling back to demo mode: OpenAI API Key not found.");
+                const demoResult = await analyzeDemoScreenshot();
+                setResults(demoResult);
+            } else {
+                setResults(result);
+            }
+        } catch (error) {
+            console.error("Critical analysis error:", error);
+            const demoResult = await analyzeDemoScreenshot();
+            setResults(demoResult);
+        }
+
         setView('results');
     };
 
@@ -124,7 +163,7 @@ export default function Home() {
                             </div>
 
                             {/* The Creator Menu - New Section */}
-                            <div className="mt-32 w-full max-w-5xl mx-auto space-y-12">
+                            <div id="creator-menu" className="mt-32 w-full max-w-5xl mx-auto space-y-12">
                                 <div className="text-center relative">
                                     <h2 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter">
                                         THE CREATOR <span className="bg-[#fde047] px-4 py-1 border-4 border-black inline-block rotate-2 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">MENU</span>
@@ -168,7 +207,7 @@ export default function Home() {
                             </div>
 
                             {/* Newsletter / Join Section */}
-                            <div className="mt-40 w-full max-w-4xl mx-auto p-12 bg-black text-white border-4 border-black shadow-[15px_15px_0px_0px_rgba(15,23,42,0.1)] relative overflow-hidden">
+                            <div id="newsletter" className="mt-40 w-full max-w-4xl mx-auto p-12 bg-black text-white border-4 border-black shadow-[15px_15px_0px_0px_rgba(15,23,42,0.1)] relative overflow-hidden">
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#fde047] rotate-45 translate-x-32 -translate-y-32" />
                                 <div className="relative z-10 space-y-8">
                                     <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter leading-none">
@@ -177,16 +216,34 @@ export default function Home() {
                                     <p className="text-xl font-bold uppercase italic text-slate-400 max-w-md">
                                         Get weekly tips on how to master the X algorithm and maximize your payouts.
                                     </p>
-                                    <div className="flex flex-col sm:flex-row gap-4">
-                                        <input
-                                            type="email"
-                                            placeholder="Pablo@sandwich.com"
-                                            className="flex-1 bg-white border-4 border-[#fde047] px-6 py-4 text-black font-black placeholder:text-slate-300 focus:outline-none"
-                                        />
-                                        <button className="px-10 py-4 bg-[#fde047] text-black font-black uppercase italic text-xl border-4 border-white shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)] hover:bg-white transition-all">
-                                            SUBSCRIBE
-                                        </button>
-                                    </div>
+                                    <form onSubmit={handleSubscribe} className="space-y-4">
+                                        <div className="flex flex-col sm:flex-row gap-4">
+                                            <input
+                                                type="email"
+                                                placeholder="Pablo@sandwich.com"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                disabled={isSubscribing}
+                                                className="flex-1 bg-white border-4 border-[#fde047] px-6 py-4 text-black font-black placeholder:text-slate-300 focus:outline-none disabled:opacity-50"
+                                                required
+                                            />
+                                            <button
+                                                type="submit"
+                                                disabled={isSubscribing}
+                                                className="px-10 py-4 bg-[#fde047] text-black font-black uppercase italic text-xl border-4 border-white shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)] hover:bg-white transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                            >
+                                                {isSubscribing ? 'Subscribing...' : 'SUBSCRIBE'}
+                                            </button>
+                                        </div>
+                                        {subMessage && (
+                                            <p className={cn(
+                                                "font-black uppercase italic text-sm px-4 py-2 border-2 w-fit",
+                                                subMessage.type === 'success' ? "bg-[#4ade80] text-black border-black" : "bg-red-500 text-white border-black"
+                                            )}>
+                                                {subMessage.text}
+                                            </p>
+                                        )}
+                                    </form>
                                 </div>
                             </div>
                         </motion.section>

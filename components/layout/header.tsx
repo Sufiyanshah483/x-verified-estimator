@@ -14,8 +14,8 @@ export function Header() {
                     <span className="text-sm font-black text-black uppercase tracking-tighter bg-[#fde047] border-2 border-black px-3 py-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] cursor-pointer">
                         Creator Intelligence
                     </span>
-                    <button className="text-sm font-black uppercase italic border-b-2 border-black">The Menu</button>
-                    <button className="text-sm font-black uppercase italic border-b-2 border-black">Pricing</button>
+                    <a href="#creator-menu" className="text-sm font-black uppercase italic border-b-2 border-black">The Menu</a>
+                    <a href="#newsletter" className="text-sm font-black uppercase italic border-b-2 border-black">Pricing</a>
                 </div>
 
                 <div className="md:hidden">
