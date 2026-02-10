@@ -320,27 +320,31 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
 
                         <div className="space-y-8">
                             <div className="grid grid-cols-2 gap-6">
-                                <div className="p-6 bg-[#f7f3eb] border-4 border-black rotate-[-1deg] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                                    <p className="text-[10px] font-black text-black uppercase tracking-widest mb-2">Total Impressions</p>
-                                    <p className="text-3xl font-black text-black italic">{formatNumber(totalImpressions)}</p>
+                                <div className="p-6 bg-[#60a5fa] border-4 border-black rotate-[-1deg] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+                                    <p className="text-[12px] font-black text-black uppercase tracking-widest mb-2">Verified Impressions</p>
+                                    <p className="text-4xl font-black text-white italic drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                                        {formatNumber(verifiedImpAvg)}
+                                    </p>
                                     <div className="mt-4 h-4 w-full bg-white border-2 border-black p-0.5">
-                                        <div className="h-full bg-[#60a5fa] w-full border-r-2 border-black" />
+                                        <div className="h-full bg-black w-[40%] border-r-2 border-black" />
                                     </div>
                                 </div>
-                                <div className="p-6 bg-[#f7f3eb] border-4 border-black rotate-[1deg] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                                    <p className="text-[10px] font-black text-black uppercase tracking-widest mb-2">Total Engagements</p>
-                                    <p className="text-3xl font-black text-black italic">{formatNumber(totalEngagements)}</p>
+                                <div className="p-6 bg-[#f472b6] border-4 border-black rotate-[1deg] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+                                    <p className="text-[12px] font-black text-black uppercase tracking-widest mb-2">Non-Verified Eng.</p>
+                                    <p className="text-4xl font-black text-white italic drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                                        {formatNumber(nonVerifiedEngagements)}
+                                    </p>
                                     <div className="mt-4 h-4 w-full bg-white border-2 border-black p-0.5">
-                                        <div className="h-full bg-[#f472b6] w-full border-r-2 border-black" />
+                                        <div className="h-full bg-black w-[80%] border-r-2 border-black" />
                                     </div>
                                 </div>
-                                <div className="p-6 bg-[#f7f3eb]/40 border-2 border-dashed border-black">
-                                    <p className="text-[10px] font-black text-black opacity-40 uppercase tracking-widest mb-2">Non-Verified Reach</p>
-                                    <p className="text-2xl font-black text-black/40 italic">{formatNumber(nonVerifiedImpressions)}</p>
+                                <div className="p-6 bg-[#f7f3eb] border-4 border-black rotate-[0.5deg] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                    <p className="text-[10px] font-black text-black opacity-60 uppercase tracking-widest mb-2">Total Impressions</p>
+                                    <p className="text-2xl font-black text-black italic">{formatNumber(totalImpressions)}</p>
                                 </div>
-                                <div className="p-6 bg-[#f7f3eb]/40 border-2 border-dashed border-black">
-                                    <p className="text-[10px] font-black text-black opacity-40 uppercase tracking-widest mb-2">Non-Verified Eng.</p>
-                                    <p className="text-2xl font-black text-black/40 italic">{formatNumber(nonVerifiedEngagements)}</p>
+                                <div className="p-6 bg-[#f7f3eb] border-4 border-black rotate-[-0.5deg] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                    <p className="text-[10px] font-black text-black opacity-60 uppercase tracking-widest mb-2">Total Engagements</p>
+                                    <p className="text-2xl font-black text-black italic">{formatNumber(totalEngagements)}</p>
                                 </div>
                             </div>
                         </div>
