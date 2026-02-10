@@ -14,10 +14,9 @@ import { subscribeNewsletter } from '@/actions/newsletter';
 import { cn } from '@/lib/utils';
 
 export default function Home() {
-    const [view, setView] = useState<'hero' | 'analyzing' | 'results'>('hero');
+    const [view, setView] = useState<'hero' | 'analyzing' | 'scanning' | 'results'>('hero');
     const [results, setResults] = useState<AnalysisResult | null>(null);
     const [username, setUsername] = useState<string>('');
-    const [isInternalLoading, setIsInternalLoading] = useState(false);
 
     // Ensure we see the results by scrolling up
     useEffect(() => {
@@ -49,7 +48,8 @@ export default function Home() {
 
     const handleAnalyze = async (data: { username: string; image: File }) => {
         setUsername(data.username);
-        setIsInternalLoading(true);
+        // Switch to scanning view
+        setView('scanning');
 
         const formData = new FormData();
         formData.append('image', data.image);
@@ -72,8 +72,7 @@ export default function Home() {
             const demoResult = await analyzeDemoScreenshot();
             setResults(demoResult);
         } finally {
-            // Ensure state updates are clean
-            setIsInternalLoading(false);
+            // Switch to results view
             setView('results');
         }
     };
@@ -82,7 +81,6 @@ export default function Home() {
         setView('hero');
         setResults(null);
         setUsername('');
-        setIsInternalLoading(false);
     };
 
     return (
@@ -95,43 +93,13 @@ export default function Home() {
 
             <main className="relative z-10 flex-1 flex flex-col items-center pt-32 pb-16 px-4 md:px-6 w-full">
 
-                {/* Scanning Overlay - Moved outside AnimatePresence to avoid deadlock */}
-                <AnimatePresence>
-                    {isInternalLoading && (
-                        <motion.div
-                            key="loading-overlay"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="fixed inset-0 z-[100] bg-[#f7f3eb]/90 backdrop-blur-md flex items-center justify-center p-6"
-                        >
-                            <div className="bg-white border-8 border-black p-12 shadow-[20px_20px_0px_0px_rgba(0,0,0,1)] text-center space-y-8 max-w-lg w-full rotate-[-1deg]">
-                                <div className="relative inline-block">
-                                    <div className="size-32 bg-[#fde047] border-4 border-black animate-spin duration-[3s] linear" />
-                                    <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-16 fill-black animate-pulse" />
-                                </div>
-                                <h3 className="text-5xl font-black uppercase italic tracking-tighter">SCANNING PAYLOAD...</h3>
-                                <p className="text-xl font-bold uppercase italic text-slate-500">Pablo is crunching the pixels.</p>
-                                <div className="h-6 w-full bg-[#f7f3eb] border-4 border-black overflow-hidden relative">
-                                    <motion.div
-                                        className="h-full bg-[#4ade80]"
-                                        initial={{ width: "0%" }}
-                                        animate={{ width: "100%" }}
-                                        transition={{ duration: 15, ease: "linear" }}
-                                    />
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
                 <AnimatePresence mode="wait">
                     {view === 'hero' && (
                         <motion.section
                             key="hero"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ duration: 0.5 }}
                             className="w-full max-w-4xl mx-auto text-center space-y-10 mb-20"
                         >
@@ -178,7 +146,7 @@ export default function Home() {
                                 </div>
                             </div>
 
-                            {/* Features Section - Styled like the requested image but in Neubrutalism */}
+                            {/* Features Section */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 text-left">
                                 <div className="p-8 bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rotate-[-1deg] hover:rotate-0 transition-all">
                                     <div className="w-12 h-12 bg-[#fde047] border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center mb-6">
@@ -205,7 +173,7 @@ export default function Home() {
                                 </div>
                             </div>
 
-                            {/* The Creator Menu - New Section */}
+                            {/* Creator Menu */}
                             <div id="creator-menu" className="mt-32 w-full max-w-5xl mx-auto space-y-12">
                                 <div className="text-center relative">
                                     <h2 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter">
@@ -213,7 +181,6 @@ export default function Home() {
                                     </h2>
                                     <p className="mt-6 text-xl font-bold uppercase italic text-slate-500">What's inside your analysis package?</p>
                                 </div>
-
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-10">
                                     <div className="bg-white border-4 border-black p-8 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] space-y-4 rotate-[-1deg]">
                                         <div className="flex justify-between items-center border-b-4 border-black pb-2">
@@ -222,7 +189,6 @@ export default function Home() {
                                         </div>
                                         <p className="font-bold text-slate-600 leading-tight">Our AI Vision API deep-scans your screenshots for engagement patterns, verifying every pixel of your reach at zero cost.</p>
                                     </div>
-
                                     <div className="bg-[#60a5fa] border-4 border-black p-8 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] space-y-4 rotate-[1.5deg]">
                                         <div className="flex justify-between items-center border-b-4 border-black pb-2">
                                             <h5 className="text-2xl font-black uppercase italic text-black">02. HEURISTIC JUICE</h5>
@@ -230,29 +196,13 @@ export default function Home() {
                                         </div>
                                         <p className="font-black text-black leading-tight">Complex math models that filter out the noise and show you the pure, verified impressions that actually count.</p>
                                     </div>
-
-                                    <div className="bg-[#f472b6] border-4 border-black p-8 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] space-y-4 rotate-[-0.5deg]">
-                                        <div className="flex justify-between items-center border-b-4 border-black pb-2">
-                                            <h5 className="text-2xl font-black uppercase italic text-black">03. PAYOUT TOPPING</h5>
-                                            <span className="bg-black text-white px-2 py-1 font-black text-sm">FREE</span>
-                                        </div>
-                                        <p className="font-black text-black leading-tight">Get an accurate revenue projection based on current X-Ad-Share rates. See what your content is really worth.</p>
-                                    </div>
-
-                                    <div className="bg-white border-4 border-black p-8 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] space-y-4 rotate-[1deg]">
-                                        <div className="flex justify-between items-center border-b-4 border-black pb-2">
-                                            <h5 className="text-2xl font-black uppercase italic">04. GROWTH DRESSING</h5>
-                                            <span className="bg-[#4ade80] text-black px-2 py-1 font-black text-sm border-2 border-black">FREE</span>
-                                        </div>
-                                        <p className="font-bold text-slate-600 leading-tight">Actionable insights on how to boost your verified engagement by up to 40% using targeted formatting.</p>
-                                    </div>
                                 </div>
                             </div>
 
-                            {/* Newsletter / Join Section */}
+                            {/* Newsletter */}
                             <div id="newsletter" className="mt-40 w-full max-w-4xl mx-auto p-12 bg-black text-white border-4 border-black shadow-[15px_15px_0px_0px_rgba(15,23,42,0.1)] relative overflow-hidden">
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#fde047] rotate-45 translate-x-32 -translate-y-32" />
-                                <div className="relative z-10 space-y-8">
+                                <div className="relative z-10 space-y-8 text-left">
                                     <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter leading-none">
                                         JOIN THE <br /> <span className="text-[#fde047]">CREATOR CLUB</span>
                                     </h2>
@@ -317,12 +267,37 @@ export default function Home() {
                         </motion.div>
                     )}
 
-                    {view === 'results' && results && (
+                    {view === 'scanning' && (
                         <motion.div
-                            key="results"
+                            key="scanning"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[200] bg-[#f7f3eb] flex items-center justify-center p-6"
+                        >
+                            <div className="bg-white border-8 border-black p-12 shadow-[20px_20px_0px_0px_rgba(0,0,0,1)] text-center space-y-8 max-w-lg w-full rotate-[-1deg]">
+                                <div className="size-32 bg-[#fde047] border-4 border-black animate-spin duration-[3s] linear mx-auto flex items-center justify-center">
+                                    <Zap className="size-16 fill-black animate-pulse" />
+                                </div>
+                                <h3 className="text-5xl font-black uppercase italic tracking-tighter">SCANNING PAYLOAD...</h3>
+                                <p className="text-xl font-bold uppercase italic text-slate-500">Pablo is crunching the pixels.</p>
+                                <div className="h-6 w-full bg-[#f7f3eb] border-4 border-black overflow-hidden relative">
+                                    <motion.div
+                                        className="h-full bg-[#4ade80]"
+                                        initial={{ width: "0%" }}
+                                        animate={{ width: "100%" }}
+                                        transition={{ duration: 15, ease: "linear" }}
+                                    />
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {view === 'results' && results && (
+                        <motion.div
+                            key="results"
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
                             className="w-full"
                         >
                             <ResultsDashboard data={results} username={username} onReset={handleReset} />
