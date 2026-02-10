@@ -15,10 +15,10 @@ export function Logo({ className = "" }: { className?: string }) {
             </div>
             <div className="flex flex-col">
                 <span className="text-2xl font-black text-black leading-none tracking-tighter uppercase italic">
-                    X-VERIFIED
+                    IMPREX
                 </span>
                 <span className="text-[10px] font-black text-white bg-black w-fit px-1.5 py-0.5 rounded-sm uppercase tracking-widest mt-1">
-                    Estimator
+                    AI
                 </span>
             </div>
         </motion.div>

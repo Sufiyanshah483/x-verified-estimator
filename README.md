@@ -1,4 +1,4 @@
-# X Verified Estimator
+# ImpreX AI
 
 A Next.js application that estimates verified impressions and engagements for X (Twitter) creators using AI-based approximation.
 

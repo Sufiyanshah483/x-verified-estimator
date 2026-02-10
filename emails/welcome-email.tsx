@@ -10,7 +10,7 @@ export function WelcomeEmail({ username }: { username: string }) {
                     Welcome to the Club, {username}!
                 </h1>
                 <p style={{ fontSize: '18px', fontWeight: '700', lineHeight: '1.5', marginBottom: '24px' }}>
-                    Your verified analytics are ready to be unlocked. We're excited to have you as part of the X Verified Estimator community.
+                    Your verified analytics are ready to be unlocked. We're excited to have you as part of the ImpreX AI community.
                 </p>
                 <div style={{ display: 'inline-block', padding: '16px 32px', border: '4px solid black', backgroundColor: '#fde047', fontWeight: '900', textTransform: 'uppercase', fontStyle: 'italic', textDecoration: 'none', color: 'black' }}>
                     Explore Your Report

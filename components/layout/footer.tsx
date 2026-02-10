@@ -3,7 +3,7 @@ export function Footer() {
         <footer className="border-t-4 border-black bg-white py-12">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="flex flex-col items-center justify-between gap-8 md:flex-row text-sm font-black text-black">
-                    <p className="uppercase italic">© {new Date().getFullYear()} X Verified Estimator. All Rights Reserved.</p>
+                    <p className="uppercase italic">© {new Date().getFullYear()} ImpreX AI. All Rights Reserved.</p>
                     <div className="flex gap-8">
                         <span className="hover:bg-[#fde047] cursor-pointer transition-all px-2 border-2 border-transparent hover:border-black uppercase">Privacy</span>
                         <span className="hover:bg-[#fde047] cursor-pointer transition-all px-2 border-2 border-transparent hover:border-black uppercase">Terms</span>
