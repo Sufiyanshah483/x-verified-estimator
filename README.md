@@ -65,7 +65,7 @@ node node_modules/vercel/dist/vc.js deploy
 
 ## GitHub Setup
 To push this project to GitHub:
-1. Create a new repository named `x-verified-estimator` on [GitHub](https://github.com/new).
+1. Create a new repository named `imprex-ai` on [GitHub](https://github.com/new).
 2. Run the following command:
    ```bash
    git branch -M main

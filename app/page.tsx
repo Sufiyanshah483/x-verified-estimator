@@ -182,7 +182,7 @@ export default function Home() {
                             </div>
 
                             <p className="max-w-2xl mx-auto text-xl text-black font-bold bg-[#60a5fa]/20 border-2 border-black/20 p-4 rounded-xl rotate-[1deg]">
-                                Unlock the secrets of your X analytics. We simulate verified reach with high-precision heuristic modeling.
+                                Unlock the secrets of your analytics with ImpreX AI. We simulate verified reach with high-precision heuristic modeling.
                             </p>
 
                             <div className="p-12 mt-12 bg-white border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)]">
