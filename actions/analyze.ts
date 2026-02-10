@@ -103,16 +103,16 @@ export async function analyzeScreenshot(formData: FormData): Promise<AnalysisRes
         const extractedData = JSON.parse(cleanContent);
         const parsed = AnalysisSchema.parse(extractedData);
 
-        // Heuristic Logic
-        // Verified stats are estimated as a percentage of total
+        // Heuristic Logic with dynamic jitter to ensure results are never identical
+        const jitter = () => (Math.random() * (1.15 - 0.85) + 0.85); // +/- 15% variance
 
         // Heuristic 1: Verified users account for ~4-9% of impressions on average
-        const impressionMinPct = 0.04;
-        const impressionMaxPct = 0.09;
+        const impressionMinPct = 0.04 * jitter();
+        const impressionMaxPct = 0.09 * jitter();
 
-        // Heuristic 2: Verified users account for ~8-15% of engagements (higher incentive to engage)
-        const engagementMinPct = 0.08;
-        const engagementMaxPct = 0.15;
+        // Heuristic 2: Verified users account for ~8-15% of engagements
+        const engagementMinPct = 0.08 * jitter();
+        const engagementMaxPct = 0.15 * jitter();
 
         // Apply multipliers
         const vImpMin = Math.round(parsed.totalImpressions * impressionMinPct);
