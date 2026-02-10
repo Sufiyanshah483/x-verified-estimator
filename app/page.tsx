@@ -92,16 +92,17 @@ export default function Home() {
 
             <Header />
 
-            <main className="relative z-10 flex-1 flex flex-col items-center pt-32 pb-16 px-4 md:px-6">
+            <main className="relative z-10 flex-1 flex flex-col items-center pt-32 pb-16 px-4 md:px-6 w-full">
 
-                <AnimatePresence mode="wait">
+                {/* Scanning Overlay - Moved outside AnimatePresence to avoid deadlock */}
+                <AnimatePresence>
                     {isInternalLoading && (
                         <motion.div
                             key="loading-overlay"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="fixed inset-0 z-[100] bg-[#f7f3eb]/80 backdrop-blur-sm flex items-center justify-center p-6"
+                            className="fixed inset-0 z-[100] bg-[#f7f3eb]/90 backdrop-blur-md flex items-center justify-center p-6"
                         >
                             <div className="bg-white border-8 border-black p-12 shadow-[20px_20px_0px_0px_rgba(0,0,0,1)] text-center space-y-8 max-w-lg w-full rotate-[-1deg]">
                                 <div className="relative inline-block">
@@ -115,12 +116,15 @@ export default function Home() {
                                         className="h-full bg-[#4ade80]"
                                         initial={{ width: "0%" }}
                                         animate={{ width: "100%" }}
-                                        transition={{ duration: 10, ease: "linear" }}
+                                        transition={{ duration: 15, ease: "linear" }}
                                     />
                                 </div>
                             </div>
                         </motion.div>
                     )}
+                </AnimatePresence>
+
+                <AnimatePresence mode="wait">
                     {view === 'hero' && (
                         <motion.section
                             key="hero"

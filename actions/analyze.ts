@@ -109,7 +109,9 @@ export async function analyzeScreenshot(formData: FormData): Promise<AnalysisRes
         const vEngMax = Math.round(parsed.totalEngagements * engagementMaxPct);
 
         // Calculate percentage for UI
-        const avgImpPct = ((vImpMin + vImpMax) / 2 / parsed.totalImpressions) * 100;
+        const avgImpPct = parsed.totalImpressions > 0
+            ? ((vImpMin + vImpMax) / 2 / parsed.totalImpressions) * 100
+            : 0;
 
         // Determine Confidence Score
         // If OCR numbers are very round (e.g. 1000) or very low, confidence might be lower
