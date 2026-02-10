@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -17,6 +17,14 @@ export default function Home() {
     const [view, setView] = useState<'hero' | 'analyzing' | 'results'>('hero');
     const [results, setResults] = useState<AnalysisResult | null>(null);
     const [username, setUsername] = useState<string>('');
+    const [isInternalLoading, setIsInternalLoading] = useState(false);
+
+    // Ensure we see the results by scrolling up
+    useEffect(() => {
+        if (view === 'results') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [view]);
 
     // Newsletter State
     const [email, setEmail] = useState('');
@@ -41,16 +49,18 @@ export default function Home() {
 
     const handleAnalyze = async (data: { username: string; image: File }) => {
         setUsername(data.username);
+        setIsInternalLoading(true);
 
         const formData = new FormData();
         formData.append('image', data.image);
         formData.append('username', data.username);
 
         try {
-            const result = await analyzeScreenshot(formData);
+            // Added a small artificial delay for better "scanning" feel if it's too fast
+            const analysisPromise = analyzeScreenshot(formData);
+            const result = await analysisPromise;
 
-            // If the real analysis fails because of missing API key, fall back to demo
-            if (result.error && result.error.includes("API key is not configured")) {
+            if (result && result.error && result.error.includes("API key is not configured")) {
                 console.warn("Falling back to demo mode: OpenAI API Key not found.");
                 const demoResult = await analyzeDemoScreenshot();
                 setResults(demoResult);
@@ -61,15 +71,17 @@ export default function Home() {
             console.error("Critical analysis error:", error);
             const demoResult = await analyzeDemoScreenshot();
             setResults(demoResult);
+        } finally {
+            setIsInternalLoading(false);
+            setView('results');
         }
-
-        setView('results');
     };
 
     const handleReset = () => {
         setView('hero');
         setResults(null);
         setUsername('');
+        setIsInternalLoading(false);
     };
 
     return (
@@ -83,6 +95,32 @@ export default function Home() {
             <main className="relative z-10 flex-1 flex flex-col items-center pt-32 pb-16 px-4 md:px-6">
 
                 <AnimatePresence mode="wait">
+                    {isInternalLoading && (
+                        <motion.div
+                            key="loading-overlay"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[100] bg-[#f7f3eb]/80 backdrop-blur-sm flex items-center justify-center p-6"
+                        >
+                            <div className="bg-white border-8 border-black p-12 shadow-[20px_20px_0px_0px_rgba(0,0,0,1)] text-center space-y-8 max-w-lg w-full rotate-[-1deg]">
+                                <div className="relative inline-block">
+                                    <div className="size-32 bg-[#fde047] border-4 border-black animate-spin duration-[3s] linear" />
+                                    <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-16 fill-black animate-pulse" />
+                                </div>
+                                <h3 className="text-5xl font-black uppercase italic tracking-tighter">SCANNING PAYLOAD...</h3>
+                                <p className="text-xl font-bold uppercase italic text-slate-500">Pablo is crunching the pixels.</p>
+                                <div className="h-6 w-full bg-[#f7f3eb] border-4 border-black overflow-hidden relative">
+                                    <motion.div
+                                        className="h-full bg-[#4ade80]"
+                                        initial={{ width: "0%" }}
+                                        animate={{ width: "100%" }}
+                                        transition={{ duration: 10, ease: "linear" }}
+                                    />
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
                     {view === 'hero' && (
                         <motion.section
                             key="hero"
