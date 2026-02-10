@@ -18,13 +18,6 @@ export default function Home() {
     const [results, setResults] = useState<AnalysisResult | null>(null);
     const [username, setUsername] = useState<string>('');
 
-    // Ensure we see the results by scrolling up
-    useEffect(() => {
-        if (view === 'results') {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    }, [view]);
-
     // Newsletter State
     const [email, setEmail] = useState('');
     const [isSubscribing, setIsSubscribing] = useState(false);
@@ -46,6 +39,34 @@ export default function Home() {
         setView('analyzing');
     };
 
+    // Ensure we see the results by scrolling up
+    useEffect(() => {
+        if (view === 'results') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [view]);
+    // Emergency Results Guard: If we are in scanning and it's taking too long, or we are in results without data
+    useEffect(() => {
+        if (view === 'results' && !results) {
+            console.warn("Entered results view without data. Forcing demo results.");
+            analyzeDemoScreenshot().then(setResults);
+        }
+
+        // Safety timeout for scanning view (max 10s)
+        if (view === 'scanning') {
+            const timer = setTimeout(() => {
+                if (view === 'scanning') {
+                    console.warn("Scanning timed out. Forcing demo results.");
+                    analyzeDemoScreenshot().then(res => {
+                        setResults(res);
+                        setView('results');
+                    });
+                }
+            }, 10000);
+            return () => clearTimeout(timer);
+        }
+    }, [view, results]);
+
     const handleAnalyze = async (data: { username: string; image: File }) => {
         setUsername(data.username);
         // Switch to scanning view
@@ -60,26 +81,25 @@ export default function Home() {
             const result = await analyzeScreenshot(formData);
 
             // Aggressive fallback: If there's ANY error or missing key, show demo
-            if (!result || result.error) {
-                console.warn("Analysis failed or API key missing, showing demo results:", result?.error);
+            if (!result || result.error || !result.verifiedImpressions) {
                 const demoResult = await analyzeDemoScreenshot();
                 setResults(demoResult);
             } else {
                 setResults(result);
             }
         } catch (error) {
-            console.error("Critical analysis error, falling back to demo:", error);
+            console.error("Critical analysis error:", error);
             const demoResult = await analyzeDemoScreenshot();
             setResults(demoResult);
         } finally {
-            // Switch to results view
-            setView('results');
+            // Wait a tiny bit for the state to settle before switching
+            setTimeout(() => setView('results'), 100);
         }
     };
 
     const handleReset = () => {
-        setView('hero');
         setResults(null);
+        setView('hero');
         setUsername('');
     };
 
@@ -270,24 +290,53 @@ export default function Home() {
                     {view === 'scanning' && (
                         <motion.div
                             key="scanning"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="fixed inset-0 z-[200] bg-[#f7f3eb] flex items-center justify-center p-6"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.1 }}
+                            className="w-full max-w-2xl mx-auto py-20 flex flex-col items-center justify-center"
                         >
-                            <div className="bg-white border-8 border-black p-12 shadow-[20px_20px_0px_0px_rgba(0,0,0,1)] text-center space-y-8 max-w-lg w-full rotate-[-1deg]">
-                                <div className="size-32 bg-[#fde047] border-4 border-black animate-spin duration-[3s] linear mx-auto flex items-center justify-center">
-                                    <Zap className="size-16 fill-black animate-pulse" />
+                            <div className="bg-white border-8 border-black p-12 shadow-[20px_20px_0px_0px_rgba(0,0,0,1)] text-center space-y-8 w-full rotate-[-1deg] relative overflow-hidden">
+                                {/* Moving background stripes for energy */}
+                                <div className="absolute inset-0 opacity-5 pointer-events-none">
+                                    <div className="absolute inset-0 bg-repeat bg-[length:40px_40px] bg-[linear-gradient(45deg,#000_25%,transparent_25%,transparent_50%,#000_50%,#000_75%,transparent_75%,transparent)]" />
                                 </div>
-                                <h3 className="text-5xl font-black uppercase italic tracking-tighter">SCANNING PAYLOAD...</h3>
-                                <p className="text-xl font-bold uppercase italic text-slate-500">Pablo is crunching the pixels.</p>
-                                <div className="h-6 w-full bg-[#f7f3eb] border-4 border-black overflow-hidden relative">
-                                    <motion.div
-                                        className="h-full bg-[#4ade80]"
-                                        initial={{ width: "0%" }}
-                                        animate={{ width: "100%" }}
-                                        transition={{ duration: 15, ease: "linear" }}
-                                    />
+
+                                <div className="relative z-10 space-y-8">
+                                    <div className="size-32 bg-[#fde047] border-4 border-black animate-spin duration-[3s] linear mx-auto flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                        <Zap className="size-16 fill-black animate-pulse" />
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <h3 className="text-5xl font-black uppercase italic tracking-tighter leading-none">
+                                            SCANNING <br /> <span className="text-[#60a5fa]">PAYLOAD...</span>
+                                        </h3>
+                                        <p className="text-xl font-bold uppercase italic text-slate-500">Pablo is crunching the pixels.</p>
+                                    </div>
+
+                                    <div className="h-8 w-full bg-[#f7f3eb] border-4 border-black overflow-hidden relative">
+                                        <motion.div
+                                            className="h-full bg-[#4ade80]"
+                                            initial={{ width: "0%" }}
+                                            animate={{ width: "100%" }}
+                                            transition={{ duration: 15, ease: "linear" }}
+                                        />
+                                    </div>
+
+                                    {/* Safety Skip Button - shows up after 6s */}
+                                    <motion.button
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 6 }}
+                                        onClick={() => {
+                                            analyzeDemoScreenshot().then(res => {
+                                                setResults(res);
+                                                setView('results');
+                                            });
+                                        }}
+                                        className="text-xs font-black uppercase tracking-widest border-b-2 border-black hover:bg-black hover:text-white px-2 transition-all mt-4"
+                                    >
+                                        Taking too long? Force reveal →
+                                    </motion.button>
                                 </div>
                             </div>
                         </motion.div>
