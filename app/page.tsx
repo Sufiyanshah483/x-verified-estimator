@@ -55,28 +55,44 @@ export default function Home() {
         formData.append('image', data.image);
         formData.append('username', data.username);
 
-        // Uses a small timeout to let the UI render the loading state first
-        setTimeout(async () => {
-            try {
-                const analysisPromise = analyzeScreenshot(formData);
-                const result = await analysisPromise;
-
-                if (result && result.error && result.error.includes("API key is not configured")) {
-                    console.warn("Falling back to demo mode: OpenAI API Key not found.");
-                    const demoResult = await analyzeDemoScreenshot();
-                    setResults(demoResult);
-                } else {
-                    setResults(result);
-                }
-            } catch (error) {
-                console.error("Critical analysis error:", error);
+        // Safety timeout: If AI takes > 15 seconds, force a demo result so they aren't stuck
+        const timeoutId = setTimeout(async () => {
+            if (isInternalLoading) {
+                console.warn("Analysis timed out. Forcing demo results.");
                 const demoResult = await analyzeDemoScreenshot();
                 setResults(demoResult);
-            } finally {
                 setIsInternalLoading(false);
                 setView('results');
             }
-        }, 100);
+        }, 15000);
+
+        try {
+            const analysisPromise = analyzeScreenshot(formData);
+            const result = await analysisPromise;
+
+            clearTimeout(timeoutId);
+
+            if (result && result.error && result.error.includes("API key is not configured")) {
+                console.warn("Falling back to demo mode: OpenAI API Key not found.");
+                const demoResult = await analyzeDemoScreenshot();
+                setResults(demoResult);
+            } else if (result && result.error) {
+                // If there's any other error, also fall back to demo for a better experience
+                console.error("Analysis error, using demo fallback:", result.error);
+                const demoResult = await analyzeDemoScreenshot();
+                setResults(demoResult);
+            } else {
+                setResults(result);
+            }
+        } catch (error) {
+            clearTimeout(timeoutId);
+            console.error("Critical analysis error:", error);
+            const demoResult = await analyzeDemoScreenshot();
+            setResults(demoResult);
+        } finally {
+            setIsInternalLoading(false);
+            setView('results');
+        }
     };
 
     const handleReset = () => {
@@ -104,11 +120,11 @@ export default function Home() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="fixed inset-0 z-[100] bg-[#f7f3eb]/90 backdrop-blur-md flex items-center justify-center p-6"
+                            className="fixed inset-0 z-[100] bg-[#f7f3eb]/95 backdrop-blur-md flex items-center justify-center p-6"
                         >
                             <div className="bg-white border-8 border-black p-12 shadow-[20px_20px_0px_0px_rgba(0,0,0,1)] text-center space-y-8 max-w-lg w-full rotate-[-1deg]">
                                 <div className="relative inline-block">
-                                    <div className="size-32 bg-[#fde047] border-4 border-black animate-spin duration-[3s] linear" />
+                                    <div className="size-32 bg-[#fde047] border-4 border-black animate-[spin_3s_linear_infinite]" />
                                     <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-16 fill-black animate-pulse" />
                                 </div>
                                 <h3 className="text-5xl font-black uppercase italic tracking-tighter">SCANNING PAYLOAD...</h3>
@@ -121,6 +137,17 @@ export default function Home() {
                                         transition={{ duration: 15, ease: "linear" }}
                                     />
                                 </div>
+                                <button
+                                    onClick={async () => {
+                                        const demo = await analyzeDemoScreenshot();
+                                        setResults(demo);
+                                        setIsInternalLoading(false);
+                                        setView('results');
+                                    }}
+                                    className="text-xs font-black uppercase tracking-tighter text-slate-400 hover:text-black transition-all border-b border-dashed border-slate-300 hover:border-black"
+                                >
+                                    Taking too long? Skip to report
+                                </button>
                             </div>
                         </motion.div>
                     )}
