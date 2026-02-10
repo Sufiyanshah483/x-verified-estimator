@@ -43,8 +43,7 @@ export function AnalyzeForm({ onAnalyze }: AnalyzeFormProps) {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleTriggerAnalysis = async () => {
         if (!onAnalyze || loading) return;
 
         setLoading(true);
@@ -55,14 +54,14 @@ export function AnalyzeForm({ onAnalyze }: AnalyzeFormProps) {
             });
         } catch (error) {
             console.error("Analysis submission error:", error);
-        } finally {
-            setLoading(false);
+            setLoading(false); // Reset on error
         }
+        // No setLoading(false) here because if it succeeds, the component unmounts
     };
 
     return (
         <div className="w-full max-w-md mx-auto p-8 bg-white border-4 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all">
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="space-y-8">
 
                 {/* Username Input */}
                 <div className="space-y-2 text-left">
@@ -78,7 +77,6 @@ export function AnalyzeForm({ onAnalyze }: AnalyzeFormProps) {
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             className="w-full bg-[#f7f3eb] border-4 border-black rounded-lg py-4 pl-12 pr-4 text-black placeholder:text-slate-400 focus:outline-none focus:bg-[#fde047] transition-all font-bold text-lg"
-                            required
                             disabled={loading}
                         />
                     </div>
@@ -158,7 +156,8 @@ export function AnalyzeForm({ onAnalyze }: AnalyzeFormProps) {
 
                 {/* Analysis Button */}
                 <button
-                    type="submit"
+                    type="button"
+                    onClick={handleTriggerAnalysis}
                     disabled={loading}
                     className="w-full py-5 rounded-lg bg-[#4ade80] text-black font-black text-2xl uppercase italic border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-y-[-2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50"
                 >
@@ -171,7 +170,7 @@ export function AnalyzeForm({ onAnalyze }: AnalyzeFormProps) {
                         'Unlock Analysis'
                     )}
                 </button>
-            </form>
+            </div>
         </div>
     );
 }

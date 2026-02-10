@@ -3,28 +3,22 @@
 import OpenAI from 'openai';
 import { z } from 'zod';
 
-// Helper to get OpenAI client safely
-function getOpenAIClient() {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) return null;
-    return new OpenAI({ apiKey });
-}
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+});
 
 const AnalysisSchema = z.object({
     totalImpressions: z.number(),
     totalEngagements: z.number(),
     timeRange: z.string(),
-    retentionRate: z.number().optional(), // Often listed as Engagement Rate in screenshots
 });
 
 interface AnalysisResult {
     verifiedImpressions: { min: number; max: number };
-    nonVerifiedImpressions: number;
     verifiedEngagements: { min: number; max: number };
     verifiedImpressionPercentage: number;
     confidenceScore: 'Low' | 'Medium' | 'High';
     timeRange: string;
-    retentionRate: number;
     raw?: {
         impressions: number;
         engagements: number;
@@ -39,12 +33,10 @@ export async function analyzeScreenshot(formData: FormData): Promise<AnalysisRes
     if (!file || !username) {
         return {
             verifiedImpressions: { min: 0, max: 0 },
-            nonVerifiedImpressions: 0,
             verifiedEngagements: { min: 0, max: 0 },
             verifiedImpressionPercentage: 0,
             confidenceScore: 'Low',
             timeRange: '',
-            retentionRate: 0,
             error: "Missing file or username"
         };
     }
@@ -57,25 +49,20 @@ export async function analyzeScreenshot(formData: FormData): Promise<AnalysisRes
         const dataUrl = `data:${file.type};base64,${base64Image}`;
 
         // Call OpenAI Vision
-        const client = getOpenAIClient();
-        if (!client) {
-            throw new Error("API key is not configured");
-        }
-
-        const response = await client.chat.completions.create({
+        const response = await openai.chat.completions.create({
             model: "gpt-4o", // Using gpt-4o for best vision performance
             messages: [
                 {
                     role: "system",
-                    content: ` Analyze the provided screenshot and extract the specific metrics: Total Impressions, Total Engagements, and Engagement Rate (which we will use as Retention Rate).
+                    content: `You are an expert data analyst for X (Twitter) analytics. 
+          Analyze the provided screenshot and extract the specific metrics: Total Impressions and Total Engagements (likes + reposts + replies + bookmarks if aggregated, or just the main engagement number).
           Also identify the Time Range (e.g., "Last 28 days", "Sep 2023", etc.).
           
           Return ONLY a valid JSON object with no markdown formatting:
           {
             "totalImpressions": number,
             "totalEngagements": number,
-            "timeRange": string,
-            "retentionRate": number (extract from Engagement Rate percentage if available, otherwise 0)
+            "timeRange": string
           }`
                 },
                 {
@@ -103,16 +90,16 @@ export async function analyzeScreenshot(formData: FormData): Promise<AnalysisRes
         const extractedData = JSON.parse(cleanContent);
         const parsed = AnalysisSchema.parse(extractedData);
 
-        // Heuristic Logic with dynamic jitter to ensure results are never identical
-        const jitter = () => (Math.random() * (1.15 - 0.85) + 0.85); // +/- 15% variance
+        // Heuristic Logic
+        // Verified stats are estimated as a percentage of total
 
         // Heuristic 1: Verified users account for ~4-9% of impressions on average
-        const impressionMinPct = 0.04 * jitter();
-        const impressionMaxPct = 0.09 * jitter();
+        const impressionMinPct = 0.04;
+        const impressionMaxPct = 0.09;
 
-        // Heuristic 2: Verified users account for ~8-15% of engagements
-        const engagementMinPct = 0.08 * jitter();
-        const engagementMaxPct = 0.15 * jitter();
+        // Heuristic 2: Verified users account for ~8-15% of engagements (higher incentive to engage)
+        const engagementMinPct = 0.08;
+        const engagementMaxPct = 0.15;
 
         // Apply multipliers
         const vImpMin = Math.round(parsed.totalImpressions * impressionMinPct);
@@ -133,18 +120,12 @@ export async function analyzeScreenshot(formData: FormData): Promise<AnalysisRes
         let confidence: 'Low' | 'Medium' | 'High' = 'High';
         if (parsed.totalImpressions < 100 || parsed.totalEngagements < 10) confidence = 'Low';
 
-        // Calculate Non-Verified Impressions
-        const vImpAvg = (vImpMin + vImpMax) / 2;
-        const nonVerifiedImp = Math.max(0, parsed.totalImpressions - vImpAvg);
-
         return {
             verifiedImpressions: { min: vImpMin, max: vImpMax },
-            nonVerifiedImpressions: Math.round(nonVerifiedImp),
             verifiedEngagements: { min: vEngMin, max: vEngMax },
             verifiedImpressionPercentage: Number(avgImpPct.toFixed(1)),
             confidenceScore: confidence,
             timeRange: parsed.timeRange,
-            retentionRate: parsed.retentionRate || 0,
             raw: {
                 impressions: parsed.totalImpressions,
                 engagements: parsed.totalEngagements
@@ -180,12 +161,10 @@ export async function analyzeScreenshot(formData: FormData): Promise<AnalysisRes
 
         return {
             verifiedImpressions: { min: 0, max: 0 },
-            nonVerifiedImpressions: 0,
             verifiedEngagements: { min: 0, max: 0 },
             verifiedImpressionPercentage: 0,
             confidenceScore: 'Low',
             timeRange: 'N/A',
-            retentionRate: 0,
             error: errorMessage
         };
     }

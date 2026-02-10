@@ -8,12 +8,10 @@ import { cn } from '@/lib/utils';
 
 export interface AnalysisResult {
     verifiedImpressions: { min: number; max: number };
-    nonVerifiedImpressions: number;
     verifiedEngagements: { min: number; max: number };
     verifiedImpressionPercentage: number;
     confidenceScore: 'Low' | 'Medium' | 'High';
     timeRange: string;
-    retentionRate: number;
     raw?: {
         impressions: number;
         engagements: number;
@@ -69,7 +67,7 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
     const totalEngagements = data.raw?.engagements || 0;
     const verifiedImpAvg = (data.verifiedImpressions.min + data.verifiedImpressions.max) / 2;
     const verifiedEngAvg = (data.verifiedEngagements.min + data.verifiedEngagements.max) / 2;
-    const nonVerifiedImpressions = data.nonVerifiedImpressions || (totalImpressions - verifiedImpAvg);
+    const nonVerifiedImpressions = totalImpressions - verifiedImpAvg;
     const nonVerifiedEngagements = totalEngagements - verifiedEngAvg;
 
     const engagementRate = totalImpressions > 0 ? (totalEngagements / totalImpressions) * 100 : 0;
@@ -143,7 +141,7 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
                     transition={{ delay: 0.1 }}
                     className="lg:col-span-2"
                 >
-                    <div className="relative group overflow-hidden rounded-3xl p-10 bg-[#fde047] border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] group-hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all h-full">
+                    <div className="relative group overflow-hidden rounded-3xl p-10 bg-[#fde047] border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] group-hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all">
                         <div className="absolute top-0 right-0 p-10 opacity-5 grayscale group-hover:opacity-10 transition-opacity">
                             <BarChart3 size={200} className="text-black" />
                         </div>
@@ -191,26 +189,26 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
                     </div>
                 </motion.div>
 
-                {/* Verified Retention Card */}
+                {/* Efficiency Score */}
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 }}
                 >
-                    <div className="rounded-3xl p-10 bg-[#c084fc] border-4 border-black h-full flex flex-col justify-between shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="rounded-3xl p-10 bg-[#4ade80] border-4 border-black h-full flex flex-col justify-between shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
                         <div>
                             <div className="p-5 bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-fit mb-10 rotate-[5deg]">
-                                <Users className="size-10 text-black" />
+                                <ShieldCheck className="size-10 text-black" />
                             </div>
-                            <h3 className="text-lg font-black text-black uppercase tracking-widest mb-2 italic">Verified Retention</h3>
+                            <h3 className="text-lg font-black text-black uppercase tracking-widest mb-2 italic">Verified Boost</h3>
                             <p className="text-7xl font-black text-black tracking-tighter italic">
-                                {data.retentionRate}%
+                                +{growthPercentage.toFixed(1)}%
                             </p>
                         </div>
                         <div className="mt-8 pt-8 border-t-4 border-black">
                             <p className="text-lg text-black font-black uppercase leading-tight italic">
-                                <span className="bg-black text-white px-2 py-1 inline-block mb-1 rotate-[-2deg]">CORE RETENTION</span> <br />
-                                High value user lock-in!
+                                <span className="bg-black text-white px-2 py-1 inline-block mb-1 rotate-[-2deg]">{(verifiedEngagementRate / engagementRate).toFixed(1)}x EFFECTIVE</span> <br />
+                                with verified users!
                             </p>
                         </div>
                     </div>
@@ -336,20 +334,11 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
                                         <div className="h-full bg-[#f472b6] w-full border-r-2 border-black" />
                                     </div>
                                 </div>
-                                <div className="p-6 bg-[#94a3b8] border-4 border-black rotate-[0.5deg] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                                    <div className="flex justify-between items-start">
-                                        <p className="text-[10px] font-black text-black uppercase tracking-widest mb-2">Non-Verified Reach</p>
-                                        <ShieldCheck className="size-4 text-black" />
-                                    </div>
-                                    <p className="text-3xl font-black text-black italic">{formatNumber(nonVerifiedImpressions)}</p>
-                                    <div className="mt-4 h-4 w-full bg-white border-2 border-black p-0.5">
-                                        <div
-                                            className="h-full bg-slate-500 border-r-2 border-black transition-all duration-1000"
-                                            style={{ width: `${totalImpressions > 0 ? (nonVerifiedImpressions / totalImpressions) * 100 : 0}%` }}
-                                        />
-                                    </div>
+                                <div className="p-6 bg-[#f7f3eb]/40 border-2 border-dashed border-black">
+                                    <p className="text-[10px] font-black text-black opacity-40 uppercase tracking-widest mb-2">Non-Verified Reach</p>
+                                    <p className="text-2xl font-black text-black/40 italic">{formatNumber(nonVerifiedImpressions)}</p>
                                 </div>
-                                <div className="p-6 bg-[#f7f3eb] border-2 border-dashed border-black">
+                                <div className="p-6 bg-[#f7f3eb]/40 border-2 border-dashed border-black">
                                     <p className="text-[10px] font-black text-black opacity-40 uppercase tracking-widest mb-2">Non-Verified Eng.</p>
                                     <p className="text-2xl font-black text-black/40 italic">{formatNumber(nonVerifiedEngagements)}</p>
                                 </div>
@@ -416,11 +405,6 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
                     Export Report
                 </button>
                 <button
-                    onClick={() => {
-                        const text = encodeURIComponent(`I just analyzed my X Verified impact with X-Verified Estimator! 🥪🚀\n\nVerified Outreach: ${formatNumber(verifiedImpAvg)}\nRetention: ${data.retentionRate}%\n\nCheck yours at-`);
-                        const url = encodeURIComponent('https://x-verified-estimator.vercel.app');
-                        window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-                    }}
                     className="flex items-center gap-4 px-12 py-6 bg-[#fde047] text-black font-black text-2xl uppercase italic border-4 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] active:translate-y-[2px] transition-all"
                 >
                     <Users className="size-6" />

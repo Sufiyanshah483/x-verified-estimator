@@ -14,9 +14,17 @@ import { subscribeNewsletter } from '@/actions/newsletter';
 import { cn } from '@/lib/utils';
 
 export default function Home() {
-    const [view, setView] = useState<'hero' | 'analyzing' | 'scanning' | 'results'>('hero');
+    const [view, setView] = useState<'hero' | 'analyzing' | 'results'>('hero');
     const [results, setResults] = useState<AnalysisResult | null>(null);
     const [username, setUsername] = useState<string>('');
+    const [isInternalLoading, setIsInternalLoading] = useState(false);
+
+    // Ensure we see the results by scrolling up
+    useEffect(() => {
+        if (view === 'results') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [view]);
 
     // Newsletter State
     const [email, setEmail] = useState('');
@@ -39,68 +47,43 @@ export default function Home() {
         setView('analyzing');
     };
 
-    // Ensure we see the results by scrolling up
-    useEffect(() => {
-        if (view === 'results') {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    }, [view]);
-    // Emergency Results Guard: If we are in scanning and it's taking too long, or we are in results without data
-    useEffect(() => {
-        if (view === 'results' && !results) {
-            console.warn("Entered results view without data. Forcing demo results.");
-            analyzeDemoScreenshot().then(setResults);
-        }
-
-        // Safety timeout for scanning view (max 10s)
-        if (view === 'scanning') {
-            const timer = setTimeout(() => {
-                if (view === 'scanning') {
-                    console.warn("Scanning timed out. Forcing demo results.");
-                    analyzeDemoScreenshot().then(res => {
-                        setResults(res);
-                        setView('results');
-                    });
-                }
-            }, 10000);
-            return () => clearTimeout(timer);
-        }
-    }, [view, results]);
-
     const handleAnalyze = async (data: { username: string; image: File }) => {
         setUsername(data.username);
-        // Switch to scanning view
-        setView('scanning');
+        setIsInternalLoading(true);
 
         const formData = new FormData();
         formData.append('image', data.image);
         formData.append('username', data.username);
 
-        try {
-            // Call the shared analysis logic
-            const result = await analyzeScreenshot(formData);
+        // Uses a small timeout to let the UI render the loading state first
+        setTimeout(async () => {
+            try {
+                const analysisPromise = analyzeScreenshot(formData);
+                const result = await analysisPromise;
 
-            // Aggressive fallback: If there's ANY error or missing key, show demo
-            if (!result || result.error || !result.verifiedImpressions) {
+                if (result && result.error && result.error.includes("API key is not configured")) {
+                    console.warn("Falling back to demo mode: OpenAI API Key not found.");
+                    const demoResult = await analyzeDemoScreenshot();
+                    setResults(demoResult);
+                } else {
+                    setResults(result);
+                }
+            } catch (error) {
+                console.error("Critical analysis error:", error);
                 const demoResult = await analyzeDemoScreenshot();
                 setResults(demoResult);
-            } else {
-                setResults(result);
+            } finally {
+                setIsInternalLoading(false);
+                setView('results');
             }
-        } catch (error) {
-            console.error("Critical analysis error:", error);
-            const demoResult = await analyzeDemoScreenshot();
-            setResults(demoResult);
-        } finally {
-            // Wait a tiny bit for the state to settle before switching
-            setTimeout(() => setView('results'), 100);
-        }
+        }, 100);
     };
 
     const handleReset = () => {
-        setResults(null);
         setView('hero');
+        setResults(null);
         setUsername('');
+        setIsInternalLoading(false);
     };
 
     return (
@@ -113,13 +96,43 @@ export default function Home() {
 
             <main className="relative z-10 flex-1 flex flex-col items-center pt-32 pb-16 px-4 md:px-6 w-full">
 
+                {/* Scanning Overlay - Moved outside AnimatePresence to avoid deadlock */}
+                <AnimatePresence>
+                    {isInternalLoading && (
+                        <motion.div
+                            key="loading-overlay"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[100] bg-[#f7f3eb]/90 backdrop-blur-md flex items-center justify-center p-6"
+                        >
+                            <div className="bg-white border-8 border-black p-12 shadow-[20px_20px_0px_0px_rgba(0,0,0,1)] text-center space-y-8 max-w-lg w-full rotate-[-1deg]">
+                                <div className="relative inline-block">
+                                    <div className="size-32 bg-[#fde047] border-4 border-black animate-spin duration-[3s] linear" />
+                                    <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-16 fill-black animate-pulse" />
+                                </div>
+                                <h3 className="text-5xl font-black uppercase italic tracking-tighter">SCANNING PAYLOAD...</h3>
+                                <p className="text-xl font-bold uppercase italic text-slate-500">Pablo is crunching the pixels.</p>
+                                <div className="h-6 w-full bg-[#f7f3eb] border-4 border-black overflow-hidden relative">
+                                    <motion.div
+                                        className="h-full bg-[#4ade80]"
+                                        initial={{ width: "0%" }}
+                                        animate={{ width: "100%" }}
+                                        transition={{ duration: 15, ease: "linear" }}
+                                    />
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
                 <AnimatePresence mode="wait">
                     {view === 'hero' && (
                         <motion.section
                             key="hero"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
+                            exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.5 }}
                             className="w-full max-w-4xl mx-auto text-center space-y-10 mb-20"
                         >
@@ -166,7 +179,7 @@ export default function Home() {
                                 </div>
                             </div>
 
-                            {/* Features Section */}
+                            {/* Features Section - Styled like the requested image but in Neubrutalism */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 text-left">
                                 <div className="p-8 bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rotate-[-1deg] hover:rotate-0 transition-all">
                                     <div className="w-12 h-12 bg-[#fde047] border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center mb-6">
@@ -193,7 +206,7 @@ export default function Home() {
                                 </div>
                             </div>
 
-                            {/* Creator Menu */}
+                            {/* The Creator Menu - New Section */}
                             <div id="creator-menu" className="mt-32 w-full max-w-5xl mx-auto space-y-12">
                                 <div className="text-center relative">
                                     <h2 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter">
@@ -201,6 +214,7 @@ export default function Home() {
                                     </h2>
                                     <p className="mt-6 text-xl font-bold uppercase italic text-slate-500">What's inside your analysis package?</p>
                                 </div>
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-10">
                                     <div className="bg-white border-4 border-black p-8 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] space-y-4 rotate-[-1deg]">
                                         <div className="flex justify-between items-center border-b-4 border-black pb-2">
@@ -209,6 +223,7 @@ export default function Home() {
                                         </div>
                                         <p className="font-bold text-slate-600 leading-tight">Our AI Vision API deep-scans your screenshots for engagement patterns, verifying every pixel of your reach at zero cost.</p>
                                     </div>
+
                                     <div className="bg-[#60a5fa] border-4 border-black p-8 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] space-y-4 rotate-[1.5deg]">
                                         <div className="flex justify-between items-center border-b-4 border-black pb-2">
                                             <h5 className="text-2xl font-black uppercase italic text-black">02. HEURISTIC JUICE</h5>
@@ -216,13 +231,29 @@ export default function Home() {
                                         </div>
                                         <p className="font-black text-black leading-tight">Complex math models that filter out the noise and show you the pure, verified impressions that actually count.</p>
                                     </div>
+
+                                    <div className="bg-[#f472b6] border-4 border-black p-8 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] space-y-4 rotate-[-0.5deg]">
+                                        <div className="flex justify-between items-center border-b-4 border-black pb-2">
+                                            <h5 className="text-2xl font-black uppercase italic text-black">03. PAYOUT TOPPING</h5>
+                                            <span className="bg-black text-white px-2 py-1 font-black text-sm">FREE</span>
+                                        </div>
+                                        <p className="font-black text-black leading-tight">Get an accurate revenue projection based on current X-Ad-Share rates. See what your content is really worth.</p>
+                                    </div>
+
+                                    <div className="bg-white border-4 border-black p-8 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] space-y-4 rotate-[1deg]">
+                                        <div className="flex justify-between items-center border-b-4 border-black pb-2">
+                                            <h5 className="text-2xl font-black uppercase italic">04. GROWTH DRESSING</h5>
+                                            <span className="bg-[#4ade80] text-black px-2 py-1 font-black text-sm border-2 border-black">FREE</span>
+                                        </div>
+                                        <p className="font-bold text-slate-600 leading-tight">Actionable insights on how to boost your verified engagement by up to 40% using targeted formatting.</p>
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Newsletter */}
+                            {/* Newsletter / Join Section */}
                             <div id="newsletter" className="mt-40 w-full max-w-4xl mx-auto p-12 bg-black text-white border-4 border-black shadow-[15px_15px_0px_0px_rgba(15,23,42,0.1)] relative overflow-hidden">
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#fde047] rotate-45 translate-x-32 -translate-y-32" />
-                                <div className="relative z-10 space-y-8 text-left">
+                                <div className="relative z-10 space-y-8">
                                     <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter leading-none">
                                         JOIN THE <br /> <span className="text-[#fde047]">CREATOR CLUB</span>
                                     </h2>
@@ -287,66 +318,12 @@ export default function Home() {
                         </motion.div>
                     )}
 
-                    {view === 'scanning' && (
-                        <motion.div
-                            key="scanning"
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 1.1 }}
-                            className="w-full max-w-2xl mx-auto py-20 flex flex-col items-center justify-center"
-                        >
-                            <div className="bg-white border-8 border-black p-12 shadow-[20px_20px_0px_0px_rgba(0,0,0,1)] text-center space-y-8 w-full rotate-[-1deg] relative overflow-hidden">
-                                {/* Moving background stripes for energy */}
-                                <div className="absolute inset-0 opacity-5 pointer-events-none">
-                                    <div className="absolute inset-0 bg-repeat bg-[length:40px_40px] bg-[linear-gradient(45deg,#000_25%,transparent_25%,transparent_50%,#000_50%,#000_75%,transparent_75%,transparent)]" />
-                                </div>
-
-                                <div className="relative z-10 space-y-8">
-                                    <div className="size-32 bg-[#fde047] border-4 border-black animate-spin duration-[3s] linear mx-auto flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                                        <Zap className="size-16 fill-black animate-pulse" />
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <h3 className="text-5xl font-black uppercase italic tracking-tighter leading-none">
-                                            SCANNING <br /> <span className="text-[#60a5fa]">PAYLOAD...</span>
-                                        </h3>
-                                        <p className="text-xl font-bold uppercase italic text-slate-500">Pablo is crunching the pixels.</p>
-                                    </div>
-
-                                    <div className="h-8 w-full bg-[#f7f3eb] border-4 border-black overflow-hidden relative">
-                                        <motion.div
-                                            className="h-full bg-[#4ade80]"
-                                            initial={{ width: "0%" }}
-                                            animate={{ width: "100%" }}
-                                            transition={{ duration: 15, ease: "linear" }}
-                                        />
-                                    </div>
-
-                                    {/* Safety Skip Button - shows up after 6s */}
-                                    <motion.button
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: 6 }}
-                                        onClick={() => {
-                                            analyzeDemoScreenshot().then(res => {
-                                                setResults(res);
-                                                setView('results');
-                                            });
-                                        }}
-                                        className="text-xs font-black uppercase tracking-widest border-b-2 border-black hover:bg-black hover:text-white px-2 transition-all mt-4"
-                                    >
-                                        Taking too long? Force reveal →
-                                    </motion.button>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-
                     {view === 'results' && results && (
                         <motion.div
                             key="results"
-                            initial={{ opacity: 0, y: 50 }}
-                            animate={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
                             className="w-full"
                         >
                             <ResultsDashboard data={results} username={username} onReset={handleReset} />
