@@ -9,10 +9,12 @@ export async function analyzeDemoScreenshot(): Promise<AnalysisResult> {
 
     return {
         verifiedImpressions: { min: 45000, max: 108000 },
+        nonVerifiedImpressions: 1092000,
         verifiedEngagements: { min: 3600, max: 6750 },
         verifiedImpressionPercentage: 6.5,
         confidenceScore: 'High',
         timeRange: 'Last 28 days',
+        retentionRate: 3.8,
         raw: {
             impressions: 1200000,
             engagements: 45000

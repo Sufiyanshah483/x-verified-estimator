@@ -11,14 +11,17 @@ const AnalysisSchema = z.object({
     totalImpressions: z.number(),
     totalEngagements: z.number(),
     timeRange: z.string(),
+    retentionRate: z.number().optional(), // Often listed as Engagement Rate in screenshots
 });
 
 interface AnalysisResult {
     verifiedImpressions: { min: number; max: number };
+    nonVerifiedImpressions: number;
     verifiedEngagements: { min: number; max: number };
     verifiedImpressionPercentage: number;
     confidenceScore: 'Low' | 'Medium' | 'High';
     timeRange: string;
+    retentionRate: number;
     raw?: {
         impressions: number;
         engagements: number;
@@ -33,10 +36,12 @@ export async function analyzeScreenshot(formData: FormData): Promise<AnalysisRes
     if (!file || !username) {
         return {
             verifiedImpressions: { min: 0, max: 0 },
+            nonVerifiedImpressions: 0,
             verifiedEngagements: { min: 0, max: 0 },
             verifiedImpressionPercentage: 0,
             confidenceScore: 'Low',
             timeRange: '',
+            retentionRate: 0,
             error: "Missing file or username"
         };
     }
@@ -54,15 +59,15 @@ export async function analyzeScreenshot(formData: FormData): Promise<AnalysisRes
             messages: [
                 {
                     role: "system",
-                    content: `You are an expert data analyst for X (Twitter) analytics. 
-          Analyze the provided screenshot and extract the specific metrics: Total Impressions and Total Engagements (likes + reposts + replies + bookmarks if aggregated, or just the main engagement number).
+                    content: ` Analyze the provided screenshot and extract the specific metrics: Total Impressions, Total Engagements, and Engagement Rate (which we will use as Retention Rate).
           Also identify the Time Range (e.g., "Last 28 days", "Sep 2023", etc.).
           
           Return ONLY a valid JSON object with no markdown formatting:
           {
             "totalImpressions": number,
             "totalEngagements": number,
-            "timeRange": string
+            "timeRange": string,
+            "retentionRate": number (extract from Engagement Rate percentage if available, otherwise 0)
           }`
                 },
                 {
@@ -120,12 +125,18 @@ export async function analyzeScreenshot(formData: FormData): Promise<AnalysisRes
         let confidence: 'Low' | 'Medium' | 'High' = 'High';
         if (parsed.totalImpressions < 100 || parsed.totalEngagements < 10) confidence = 'Low';
 
+        // Calculate Non-Verified Impressions
+        const vImpAvg = (vImpMin + vImpMax) / 2;
+        const nonVerifiedImp = Math.max(0, parsed.totalImpressions - vImpAvg);
+
         return {
             verifiedImpressions: { min: vImpMin, max: vImpMax },
+            nonVerifiedImpressions: Math.round(nonVerifiedImp),
             verifiedEngagements: { min: vEngMin, max: vEngMax },
             verifiedImpressionPercentage: Number(avgImpPct.toFixed(1)),
             confidenceScore: confidence,
             timeRange: parsed.timeRange,
+            retentionRate: parsed.retentionRate || 0,
             raw: {
                 impressions: parsed.totalImpressions,
                 engagements: parsed.totalEngagements
@@ -161,10 +172,12 @@ export async function analyzeScreenshot(formData: FormData): Promise<AnalysisRes
 
         return {
             verifiedImpressions: { min: 0, max: 0 },
+            nonVerifiedImpressions: 0,
             verifiedEngagements: { min: 0, max: 0 },
             verifiedImpressionPercentage: 0,
             confidenceScore: 'Low',
             timeRange: 'N/A',
+            retentionRate: 0,
             error: errorMessage
         };
     }
