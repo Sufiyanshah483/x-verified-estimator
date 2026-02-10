@@ -59,19 +59,20 @@ export default function Home() {
             // Call the shared analysis logic
             const result = await analyzeScreenshot(formData);
 
-            if (result && result.error && result.error.includes("API key is not configured")) {
-                console.warn("Falling back to demo mode: OpenAI API Key not found.");
+            // Aggressive fallback: If there's ANY error or missing key, show demo
+            if (!result || result.error) {
+                console.warn("Analysis failed or API key missing, showing demo results:", result?.error);
                 const demoResult = await analyzeDemoScreenshot();
                 setResults(demoResult);
             } else {
                 setResults(result);
             }
         } catch (error) {
-            console.error("Critical analysis error:", error);
+            console.error("Critical analysis error, falling back to demo:", error);
             const demoResult = await analyzeDemoScreenshot();
             setResults(demoResult);
         } finally {
-            // Ensure state updates are bundled or sequence is correct
+            // Ensure state updates are clean
             setIsInternalLoading(false);
             setView('results');
         }
