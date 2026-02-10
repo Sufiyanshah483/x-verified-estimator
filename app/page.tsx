@@ -47,51 +47,61 @@ export default function Home() {
         setView('analyzing');
     };
 
+    const isProcessingRef = React.useRef(false);
+
     const handleAnalyze = async (data: { username: string; image: File }) => {
+        console.log("Starting analysis for:", data.username);
         setUsername(data.username);
         setIsInternalLoading(true);
+        isProcessingRef.current = true;
 
         const formData = new FormData();
         formData.append('image', data.image);
         formData.append('username', data.username);
 
-        // Safety timeout: If AI takes > 15 seconds, force a demo result so they aren't stuck
+        // Safety timeout: If AI takes > 8 seconds, force a demo result so they aren't stuck
         const timeoutId = setTimeout(async () => {
-            if (isInternalLoading) {
-                console.warn("Analysis timed out. Forcing demo results.");
+            if (isProcessingRef.current) {
+                console.warn("Analysis timed out (8s). Forcing demo fallback.");
                 const demoResult = await analyzeDemoScreenshot();
                 setResults(demoResult);
+                isProcessingRef.current = false;
                 setIsInternalLoading(false);
                 setView('results');
             }
-        }, 15000);
+        }, 8000);
 
         try {
+            console.log("Sending payload to server action...");
             const analysisPromise = analyzeScreenshot(formData);
             const result = await analysisPromise;
 
-            clearTimeout(timeoutId);
+            if (isProcessingRef.current) {
+                clearTimeout(timeoutId);
+                console.log("Analysis result received:", !!result);
 
-            if (result && result.error && result.error.includes("API key is not configured")) {
-                console.warn("Falling back to demo mode: OpenAI API Key not found.");
-                const demoResult = await analyzeDemoScreenshot();
-                setResults(demoResult);
-            } else if (result && result.error) {
-                // If there's any other error, also fall back to demo for a better experience
-                console.error("Analysis error, using demo fallback:", result.error);
-                const demoResult = await analyzeDemoScreenshot();
-                setResults(demoResult);
-            } else {
-                setResults(result);
+                if (result && result.error) {
+                    console.error("Server side error, falling back to demo:", result.error);
+                    const demoResult = await analyzeDemoScreenshot();
+                    setResults(demoResult);
+                } else {
+                    setResults(result);
+                }
             }
         } catch (error) {
-            clearTimeout(timeoutId);
-            console.error("Critical analysis error:", error);
-            const demoResult = await analyzeDemoScreenshot();
-            setResults(demoResult);
+            if (isProcessingRef.current) {
+                clearTimeout(timeoutId);
+                console.error("Critical analysis exception:", error);
+                const demoResult = await analyzeDemoScreenshot();
+                setResults(demoResult);
+            }
         } finally {
-            setIsInternalLoading(false);
-            setView('results');
+            if (isProcessingRef.current) {
+                isProcessingRef.current = false;
+                setIsInternalLoading(false);
+                setView('results');
+                console.log("Transitioning to results view.");
+            }
         }
     };
 
