@@ -48,7 +48,7 @@ A Next.js application that estimates verified impressions and engagements for X 
 
 ## Deployment
 
-Deploy easily with [Vercel](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) for automatic continuous deployment:
+Deploy easily with [Vercel](https://imprex-ai.vercel.app) for automatic continuous deployment:
 
 1. Push your code to a Git repository (GitHub, GitLab, Bitbucket).
 2. Import the project into Vercel.
