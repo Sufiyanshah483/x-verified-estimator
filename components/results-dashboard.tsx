@@ -344,8 +344,8 @@ export function ResultsDashboard({ data, username, onReset }: ResultsDashboardPr
                                     <p className="text-3xl font-black text-black italic">{formatNumber(nonVerifiedImpressions)}</p>
                                     <div className="mt-4 h-4 w-full bg-white border-2 border-black p-0.5">
                                         <div
-                                            className="h-full bg-slate-500 border-r-2 border-black"
-                                            style={{ width: `${(nonVerifiedImpressions / totalImpressions) * 100}%` }}
+                                            className="h-full bg-slate-500 border-r-2 border-black transition-all duration-1000"
+                                            style={{ width: `${totalImpressions > 0 ? (nonVerifiedImpressions / totalImpressions) * 100 : 0}%` }}
                                         />
                                     </div>
                                 </div>

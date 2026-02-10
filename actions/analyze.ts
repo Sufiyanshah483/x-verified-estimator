@@ -3,9 +3,12 @@
 import OpenAI from 'openai';
 import { z } from 'zod';
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+// Helper to get OpenAI client safely
+function getOpenAIClient() {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) return null;
+    return new OpenAI({ apiKey });
+}
 
 const AnalysisSchema = z.object({
     totalImpressions: z.number(),
@@ -54,7 +57,12 @@ export async function analyzeScreenshot(formData: FormData): Promise<AnalysisRes
         const dataUrl = `data:${file.type};base64,${base64Image}`;
 
         // Call OpenAI Vision
-        const response = await openai.chat.completions.create({
+        const client = getOpenAIClient();
+        if (!client) {
+            throw new Error("API key is not configured");
+        }
+
+        const response = await client.chat.completions.create({
             model: "gpt-4o", // Using gpt-4o for best vision performance
             messages: [
                 {

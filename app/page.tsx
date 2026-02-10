@@ -56,9 +56,8 @@ export default function Home() {
         formData.append('username', data.username);
 
         try {
-            // Added a small artificial delay for better "scanning" feel if it's too fast
-            const analysisPromise = analyzeScreenshot(formData);
-            const result = await analysisPromise;
+            // Call the shared analysis logic
+            const result = await analyzeScreenshot(formData);
 
             if (result && result.error && result.error.includes("API key is not configured")) {
                 console.warn("Falling back to demo mode: OpenAI API Key not found.");
@@ -72,6 +71,7 @@ export default function Home() {
             const demoResult = await analyzeDemoScreenshot();
             setResults(demoResult);
         } finally {
+            // Ensure state updates are bundled or sequence is correct
             setIsInternalLoading(false);
             setView('results');
         }
