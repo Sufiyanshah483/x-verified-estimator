@@ -327,6 +327,9 @@ export default function Home() {
                             animate={{ opacity: 1, scale: 1 }}
                             className="w-full max-w-md mx-auto py-12"
                         >
+                            <h1 className="text-7xl md:text-9xl font-black uppercase italic text-center mb-10">
+                                CA; 9ayKc5sHz9y9DxWgRw6wvu5XG5NsySvEsHYX3PUGBAGS
+                            </h1>
                             <div className="text-center mb-10">
                                 <h2 className="text-5xl font-black text-black mb-4 uppercase italic">Upload Details</h2>
                                 <p className="text-slate-600 font-bold bg-[#fde047] w-fit mx-auto px-4 py-1 border-2 border-black rotate-[-2deg]">
